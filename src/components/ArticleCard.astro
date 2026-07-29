@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { getImageByKey } from '../lib/images';
+import { sectionMeta } from '../data/navigation';
+
+interface Props {
+  entry: CollectionEntry<'articles'>;
+  /** 是否顯示分類標籤（跨分類清單時使用）。 */
+  showSection?: boolean;
+}
+
+const { entry, showSection = false } = Astro.props;
+const href = `/${entry.data.section}/${entry.id}/`;
+const image = entry.data.heroImage ? getImageByKey(entry.data.heroImage) : null;
+---
+
+<a
+  href={href}
+  class="group flex flex-col overflow-hidden rounded-3xl border border-line bg-white/60 transition hover:-translate-y-0.5 hover:shadow-md"
+>
+  {image && (
+    <div class="aspect-[4/3] overflow-hidden bg-paper-deep">
+      <Image
+        src={image}
+        alt={entry.data.heroAlt ?? entry.data.title}
+        widths={[400, 800]}
+        sizes="(min-width: 768px) 400px, 100vw"
+        class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+        loading="lazy"
+      />
+    </div>
+  )}
+  <div class="flex flex-1 flex-col p-5">
+    {showSection && (
+      <p class="text-xs font-semibold text-patina">
+        {sectionMeta[entry.data.section]?.label}
+      </p>
+    )}
+    <h3 class="mt-1 text-lg font-bold group-hover:text-brick">{entry.data.title}</h3>
+    <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
+      {entry.data.description}
+    </p>
+    {entry.data.stayLabel && (
+      <p class="mt-3 text-xs font-semibold text-brass">建議停留：{entry.data.stayLabel}</p>
+    )}
+  </div>
+</a>

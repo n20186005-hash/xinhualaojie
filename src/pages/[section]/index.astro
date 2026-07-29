@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { sectionMeta } from '../../data/navigation';
+import { breadcrumbSchema } from '../../lib/schema';
+import { getImageByKey } from '../../lib/images';
+
+export async function getStaticPaths() {
+  return Object.keys(sectionMeta).map((section) => ({
+    params: { section },
+  }));
+}
+
+const { section } = Astro.params;
+const meta = sectionMeta[section]!;
+
+const entries = (await getCollection('articles', (e) => e.data.section === section)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const firstImageKey = entries.find((e) => e.data.heroImage)?.data.heroImage;
+const ogImage = firstImageKey ? getImageByKey(firstImageKey) : undefined;
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: meta.label, path: `/${section}/` },
+  ]),
+];
+---
+
+<BaseLayout
+  pageTitle={meta.title}
+  description={meta.description}
+  ogImage={ogImage}
+  schemas={schemas}
+>
+  <div class="mx-auto max-w-6xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: meta.label }]} />
+
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">{meta.title}</h1>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">{meta.description}</p>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {entries.map((entry) => (
+        <ArticleCard entry={entry} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

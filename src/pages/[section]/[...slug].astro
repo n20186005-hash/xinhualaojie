@@ -1,0 +1,174 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, getEntry, render } from 'astro:content';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Prose from '../../components/Prose.astro';
+import FAQList from '../../components/FAQList.astro';
+import RouteTimeline from '../../components/RouteTimeline.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import GoogleMapsButton from '../../components/GoogleMapsButton.astro';
+import { sectionMeta } from '../../data/navigation';
+import { googleMaps, mapsSearch } from '../../lib/google-maps';
+import {
+  articleSchema,
+  breadcrumbSchema,
+  faqSchema,
+  touristTripSchema,
+} from '../../lib/schema';
+import { getImageByKey } from '../../lib/images';
+import { site } from '../../data/site';
+import { getImage } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles');
+  return entries.map((entry) => ({
+    params: { section: entry.data.section, slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const meta = sectionMeta[entry.data.section]!;
+const path = `/${entry.data.section}/${entry.id}/`;
+const heroImage = entry.data.heroImage ? getImageByKey(entry.data.heroImage) : null;
+
+const related = (
+  await getCollection(
+    'articles',
+    (e) =>
+      e.id !== entry.id &&
+      (entry.data.related.includes(e.id) ||
+        (entry.data.related.length === 0 && e.data.section === entry.data.section)),
+  )
+)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+let heroImageUrl: string | undefined;
+if (heroImage) {
+  const optimized = await getImage({ src: heroImage, width: 1200, format: 'jpeg' });
+  heroImageUrl = new URL(optimized.src, site.url).href;
+}
+
+const schemas: object[] = [
+  articleSchema({
+    title: entry.data.title,
+    description: entry.data.description,
+    path,
+    imageUrl: heroImageUrl,
+  }),
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: meta.label, path: `/${entry.data.section}/` },
+    { name: entry.data.title, path },
+  ]),
+];
+
+if (entry.data.faq.length > 0) {
+  schemas.push(faqSchema(entry.data.faq));
+}
+
+if (entry.data.stops && entry.data.stops.length > 0) {
+  schemas.push(
+    touristTripSchema({
+      title: entry.data.title,
+      description: entry.data.description,
+      path,
+      stops: entry.data.stops,
+    }),
+  );
+}
+
+const mapsHref = entry.data.mapsQuery ? mapsSearch(entry.data.mapsQuery) : googleMaps.place;
+---
+
+<BaseLayout
+  pageTitle={entry.data.title}
+  description={entry.data.description}
+  ogImage={heroImage ?? undefined}
+  schemas={schemas}
+>
+  <article class="mx-auto max-w-3xl px-4 py-10 md:px-6">
+    <Breadcrumbs
+      items={[
+        { name: '首頁', path: '/' },
+        { name: meta.label, path: `/${entry.data.section}/` },
+        { name: entry.data.title },
+      ]}
+    />
+
+    <header class="mt-4">
+      <h1 class="text-3xl font-bold leading-snug md:text-4xl">{entry.data.title}</h1>
+      <p class="mt-3 leading-relaxed text-ink-soft">{entry.data.description}</p>
+
+      {entry.data.stayLabel && (
+        <p class="mt-3 inline-flex rounded-full bg-patina-light px-4 py-1.5 text-sm font-semibold text-patina">
+          建議停留：{entry.data.stayLabel}
+        </p>
+      )}
+    </header>
+
+    {heroImage && (
+      <Image
+        src={heroImage}
+        alt={entry.data.heroAlt ?? entry.data.title}
+        widths={[640, 960, 1280]}
+        sizes="(min-width: 768px) 720px, 100vw"
+        class="mt-6 aspect-[3/2] w-full rounded-3xl border border-line object-cover"
+        loading="eager"
+        fetchpriority="high"
+      />
+    )}
+
+    <div class="mt-8">
+      <Prose>
+        <Content />
+      </Prose>
+    </div>
+
+    {entry.data.stops && entry.data.stops.length > 0 && (
+      <section class="mt-10" aria-label="路線各站">
+        <h2 class="mb-6 text-2xl font-bold">路線各站</h2>
+        <RouteTimeline stops={entry.data.stops} />
+      </section>
+    )}
+
+    {entry.data.showMapActions && (
+      <aside class="mt-10 rounded-3xl bg-paper-deep p-6 md:p-8">
+        <h2 class="text-xl font-bold">出發前開啟地圖</h2>
+        <p class="mt-2 text-sm leading-relaxed text-ink-soft">
+          店家營業狀態與即時路況請以 Google 地圖為準。
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <GoogleMapsButton href={mapsHref} />
+          <GoogleMapsButton
+            href={googleMaps.directions}
+            label="導航到新化老街"
+            variant="secondary"
+          />
+        </div>
+      </aside>
+    )}
+
+    {entry.data.faq.length > 0 && (
+      <div class="mt-12">
+        <FAQList items={entry.data.faq} />
+      </div>
+    )}
+  </article>
+
+  {related.length > 0 && (
+    <section class="mx-auto max-w-6xl px-4 pb-16 md:px-6" aria-label="延伸閱讀">
+      <h2 class="text-2xl font-bold">繼續規劃行程</h2>
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((r) => (
+          <ArticleCard entry={r} showSection />
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

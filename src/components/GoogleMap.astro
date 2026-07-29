@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import { googleMaps } from '../lib/google-maps';
+import GoogleMapsButton from './GoogleMapsButton.astro';
+import mapPlaceholder from '../assets/street-corner.jpg';
+---
+
+<section aria-labelledby="google-map-title" class="mx-auto max-w-6xl px-4 md:px-6">
+  <div class="mb-4">
+    <p class="text-sm font-semibold text-patina">位置</p>
+    <h2 id="google-map-title" class="text-2xl font-bold md:text-3xl">
+      新化老街在哪裡？
+    </h2>
+    <p class="mt-2 text-ink-soft">
+      臺南市新化區中正路一帶，鄰近新化傳統市場與大目降文化園區。
+    </p>
+  </div>
+
+  <div
+    id="map-container"
+    class="relative overflow-hidden rounded-3xl border border-line bg-paper-deep"
+  >
+    <Image
+      src={mapPlaceholder}
+      alt="新化老街中正路街景，點擊按鈕載入 Google 地圖"
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1152px) 1104px, 100vw"
+      class="h-[420px] w-full object-cover opacity-70"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-ink/40 p-6 text-center">
+      <p class="text-lg font-semibold text-white">查看新化老街周邊地圖</p>
+      <button
+        id="load-map"
+        type="button"
+        class="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-brick transition hover:bg-paper"
+        data-embed={googleMaps.embed}
+      >
+        載入 Google 地圖
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-3">
+    <GoogleMapsButton href={googleMaps.place} label="開啟景點頁面" />
+    <GoogleMapsButton href={googleMaps.directions} label="從目前位置導航" variant="secondary" />
+    <GoogleMapsButton href={googleMaps.parking} label="搜尋附近停車場" variant="secondary" />
+  </div>
+</section>
+
+<script>
+  const button = document.getElementById('load-map');
+  button?.addEventListener('click', () => {
+    const container = document.getElementById('map-container');
+    const embedUrl = button.dataset.embed;
+    if (!container || !embedUrl) return;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl;
+    iframe.title = '新化老街 Google 地圖';
+    iframe.className = 'h-[420px] w-full border-0';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.allowFullscreen = true;
+
+    container.replaceChildren(iframe);
+  });
+</script>

@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Prose from '../components/Prose.astro';
+import { breadcrumbSchema } from '../lib/schema';
+import { site } from '../data/site';
+
+const pageTitle = '關於本站';
+const description =
+  `${site.domain} 是以旅客需求為出發點的新化老街旅行指南，整理散步路線、美食、交通與歷史建築資訊。`;
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: '關於本站', path: '/about/' },
+  ]),
+];
+---
+
+<BaseLayout pageTitle={pageTitle} description={description} schemas={schemas}>
+  <div class="mx-auto max-w-3xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: '關於本站' }]} />
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">關於本站</h1>
+
+    <div class="mt-8">
+      <Prose>
+        <p>
+          {site.domain} 是以旅客需求為出發點的新化老街旅行指南，整理散步路線、美食、交通與歷史建築資訊，希望讓每一位造訪臺南市新化區的旅客，都能更輕鬆地認識這條仍在生活中的百年街區。
+        </p>
+
+        <h2>我們相信的逛法</h2>
+        <p>
+          新化老街不是只有一排立面漂亮的房子。它與新化傳統市場、三角湧、新化街役場、楊逵文學紀念館、武德殿和大目降文化園區彼此相連，走路就能串成一條完整的散步路線。所以本站不只告訴你新化老街在哪裡，而是直接告訴你從哪裡開始走、沿途看什麼、吃什麼，以及下一站去哪裡。
+        </p>
+
+        <h2>內容怎麼來</h2>
+        <ul>
+          <li>散步路線、建築看點與歷史背景由本站彙整撰寫，並持續修訂。</li>
+          <li>網站使用的照片皆為實地拍攝的授權影像，詳見<a href="/image-credits/">圖片授權</a>。</li>
+          <li>店家營業狀態、公車班次與停車狀況變動較快，本站一律連結至 Google 地圖，請以地圖上的最新資訊為準。</li>
+        </ul>
+
+        <h2>聯絡我們</h2>
+        <p>
+          對內容有任何指正或建議，歡迎來信 <a href={`mailto:${site.email}`}>{site.email}</a>，或透過<a href="/contact/">聯絡頁面</a>與我們聯繫。
+        </p>
+      </Prose>
+    </div>
+  </div>
+</BaseLayout>

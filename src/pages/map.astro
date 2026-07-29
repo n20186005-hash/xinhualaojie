@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import GoogleMap from '../components/GoogleMap.astro';
+import { mapsSearch } from '../lib/google-maps';
+import { breadcrumbSchema } from '../lib/schema';
+
+const pageTitle = '新化老街地圖與位置';
+const description =
+  '新化老街位於臺南市新化區中正路一帶。提供 Google 地圖導航、附近停車場搜尋與周邊景點位置，出發前先把路線準備好。';
+
+const spots = [
+  { name: '新化老街（中正路街屋）', query: '新化老街' },
+  { name: '新化傳統市場', query: '新化市場' },
+  { name: '三角湧', query: '新化三角湧' },
+  { name: '新化街役場', query: '新化街役場' },
+  { name: '楊逵文學紀念館', query: '楊逵文學紀念館' },
+  { name: '新化武德殿', query: '新化武德殿' },
+  { name: '大目降文化園區', query: '大目降文化園區' },
+  { name: '虎頭埤風景區', query: '虎頭埤風景區' },
+];
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: '地圖與位置', path: '/map/' },
+  ]),
+];
+---
+
+<BaseLayout pageTitle={pageTitle} description={description} schemas={schemas}>
+  <div class="mx-auto max-w-6xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: '地圖與位置' }]} />
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">新化老街地圖與位置</h1>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">{description}</p>
+  </div>
+
+  <GoogleMap />
+
+  <section class="mx-auto max-w-6xl px-4 py-12 md:px-6" aria-label="周邊地點快速搜尋">
+    <h2 class="text-2xl font-bold">周邊地點快速搜尋</h2>
+    <p class="mt-2 text-ink-soft">點擊即可在 Google 地圖開啟該地點。</p>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {spots.map((spot) => (
+        <li>
+          <a
+            href={mapsSearch(spot.query)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-between gap-2 rounded-2xl border border-line bg-white/60 px-4 py-3 font-semibold transition hover:border-brick hover:text-brick"
+          >
+            {spot.name}
+            <span aria-hidden="true" class="text-patina">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

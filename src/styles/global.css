@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-paper: #f4efe5;
+  --color-paper-deep: #e8dfd0;
+  --color-ink: #282522;
+  --color-ink-soft: #625b53;
+
+  --color-brick: #8a4137;
+  --color-brick-dark: #693129;
+
+  --color-patina: #386d68;
+  --color-patina-light: #dbe8e5;
+
+  --color-brass: #b38950;
+  --color-line: #d8cec0;
+
+  --font-sans:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang TC",
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    Arial,
+    sans-serif;
+
+  --font-serif:
+    ui-serif,
+    "Songti TC",
+    "PMingLiU",
+    "Times New Roman",
+    serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+.display-title {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}

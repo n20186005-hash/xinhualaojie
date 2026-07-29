@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Prose from '../components/Prose.astro';
+import { breadcrumbSchema } from '../lib/schema';
+import { site } from '../data/site';
+
+const pageTitle = '聯絡我們';
+const description =
+  `對新化老街的內容有指正、建議或合作想法？歡迎透過電子郵件與 ${site.domain} 聯繫。`;
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: '聯絡我們', path: '/contact/' },
+  ]),
+];
+---
+
+<BaseLayout pageTitle={pageTitle} description={description} schemas={schemas}>
+  <div class="mx-auto max-w-3xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: '聯絡我們' }]} />
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">聯絡我們</h1>
+
+    <div class="mt-8">
+      <Prose>
+        <p>以下情況都歡迎來信：</p>
+        <ul>
+          <li>發現內容有誤，或有更新的在地資訊；</li>
+          <li>你是店家或景點管理者，希望補充或修正介紹；</li>
+          <li>你是攝影師，願意提供授權照片，或對圖片標示有疑問；</li>
+          <li>其他與新化旅遊內容相關的建議與合作。</li>
+        </ul>
+        <p>
+          聯絡信箱：<a href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+        <p>我們會在收到來信後儘快回覆。謝謝你幫助這份指南變得更好。</p>
+      </Prose>
+    </div>
+
+    <a
+      href={`mailto:${site.email}?subject=${encodeURIComponent(`${site.domain} 內容回饋`)}`}
+      class="mt-6 inline-flex min-h-12 items-center rounded-full bg-brick px-6 py-3 font-semibold text-white transition hover:bg-brick-dark"
+    >
+      寫信給我們
+    </a>
+  </div>
+</BaseLayout>

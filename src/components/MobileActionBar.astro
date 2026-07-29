@@ -1,0 +1,27 @@
+---
+import { googleMaps } from '../lib/google-maps';
+
+const actions = [
+  { label: '地圖導航', href: googleMaps.directions, external: true },
+  { label: '散步路線', href: '/routes/two-hours/', external: false },
+  { label: '停車', href: '/transport/parking/', external: false },
+];
+---
+
+<nav
+  aria-label="快速操作"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 backdrop-blur md:hidden"
+>
+  <div class="grid grid-cols-3">
+    {actions.map((action) => (
+      <a
+        href={action.href}
+        target={action.external ? '_blank' : undefined}
+        rel={action.external ? 'noopener noreferrer' : undefined}
+        class="flex min-h-14 items-center justify-center text-sm font-semibold text-brick"
+      >
+        {action.label}
+      </a>
+    ))}
+  </div>
+</nav>

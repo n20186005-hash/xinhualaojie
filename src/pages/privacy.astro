@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Prose from '../components/Prose.astro';
+import { breadcrumbSchema } from '../lib/schema';
+import { site } from '../data/site';
+
+const pageTitle = '隱私權政策';
+const description =
+  `${site.domain} 的隱私權政策：本站不設會員或留言功能，並說明 Google Analytics、外部連結與嵌入地圖的資料處理方式。`;
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: '隱私權政策', path: '/privacy/' },
+  ]),
+];
+---
+
+<BaseLayout pageTitle={pageTitle} description={description} schemas={schemas}>
+  <div class="mx-auto max-w-3xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: '隱私權政策' }]} />
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">隱私權政策</h1>
+
+    <div class="mt-8">
+      <Prose>
+        <h2>我們如何處理你的資料</h2>
+        <p>
+          {site.domain} 是一個純靜態的旅遊資訊網站。本站沒有會員系統、沒有留言功能、沒有表單資料庫，瀏覽本站不需要註冊或主動提供個人資料。
+        </p>
+
+        <h2>Cookie 與流量統計</h2>
+        <p>
+          本站使用 Google Analytics 4（GA4）瞭解頁面瀏覽、裝置與瀏覽器類型、概略地區及站內互動等彙整資訊。Google Analytics 可能使用 Cookie 或類似技術處理資料；相關資料的處理方式適用
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google 隱私權政策</a>。
+        </p>
+
+        <h2>Google 地圖</h2>
+        <p>
+          本站頁面提供 Google 地圖連結與「點擊後載入」的嵌入地圖。在你主動點擊載入或開啟連結之前，頁面不會向 Google 發出請求；載入或開啟後，相關資料處理適用
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google 隱私權政策</a>。
+        </p>
+
+        <h2>外部連結</h2>
+        <p>
+          本站連結至 Google 地圖、Wikimedia Commons 等外部網站。這些網站的內容與隱私權做法由各網站自行負責，建議你在使用時參閱其隱私權聲明。
+        </p>
+
+        <h2>聯絡方式</h2>
+        <p>
+          你透過電子郵件與我們聯繫時，來信內容僅用於回覆與改善網站內容，不會提供給第三方。聯絡信箱：
+          <a href={`mailto:${site.email}`}>{site.email}</a>。
+        </p>
+      </Prose>
+    </div>
+  </div>
+</BaseLayout>

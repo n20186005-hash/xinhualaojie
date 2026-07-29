@@ -1,0 +1,22 @@
+---
+interface Props {
+  items: { name: string; path?: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="路徑導覽" class="text-sm text-ink-soft">
+  <ol class="flex flex-wrap items-center gap-1.5">
+    {items.map((item, index) => (
+      <li class="flex items-center gap-1.5">
+        {index > 0 && <span aria-hidden="true">›</span>}
+        {item.path ? (
+          <a href={item.path} class="transition hover:text-brick">{item.name}</a>
+        ) : (
+          <span aria-current="page" class="text-ink">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

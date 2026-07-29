@@ -1,0 +1,45 @@
+---
+import { mapsSearch } from '../lib/google-maps';
+
+interface Props {
+  stops: {
+    name: string;
+    summary: string;
+    stayLabel?: string;
+    mapsQuery?: string;
+  }[];
+}
+
+const { stops } = Astro.props;
+---
+
+<ol class="relative space-y-6 border-s-2 border-patina-light ps-6">
+  {stops.map((stop, index) => (
+    <li class="relative">
+      <span
+        class="absolute -start-[35px] flex h-6 w-6 items-center justify-center rounded-full bg-patina text-xs font-bold text-white"
+        aria-hidden="true"
+      >
+        {index + 1}
+      </span>
+      <div class="rounded-2xl border border-line bg-white/60 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-bold">{stop.name}</h3>
+          {stop.stayLabel && (
+            <span class="text-xs font-semibold text-brass">停留 {stop.stayLabel}</span>
+          )}
+        </div>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{stop.summary}</p>
+        <a
+          href={mapsSearch(stop.mapsQuery ?? stop.name)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-patina transition hover:text-brick"
+        >
+          在 Google 地圖查看
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </li>
+  ))}
+</ol>

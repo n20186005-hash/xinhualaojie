@@ -1,0 +1,430 @@
+---
+import { Image } from 'astro:assets';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GoogleMapsButton from '../components/GoogleMapsButton.astro';
+import GoogleMap from '../components/GoogleMap.astro';
+import FAQList from '../components/FAQList.astro';
+import { googleMaps, mapsSearch } from '../lib/google-maps';
+import {
+  websiteSchema,
+  touristAttractionSchema,
+  faqSchema,
+} from '../lib/schema';
+
+import heroStreet from '../assets/hero-street.jpg';
+import streetCorner from '../assets/street-corner.jpg';
+import facade02 from '../assets/facade-detail-02.jpg';
+import facade04 from '../assets/facade-detail-04.jpg';
+import facade09 from '../assets/facade-detail-09.jpg';
+import facade16 from '../assets/facade-detail-16.jpg';
+import streetOffice from '../assets/street-office.jpg';
+import wudeAnnex from '../assets/wude-annex.jpg';
+import wudeHall from '../assets/wude-hall.jpg';
+import yangKui from '../assets/yang-kui-memorial.jpg';
+import hutoupi from '../assets/hutoupi-lake.jpg';
+import xinhuaForest from '../assets/xinhua-forest.jpg';
+
+const quickFacts = [
+  { title: '建議停留', value: '約 1～3 小時', note: '散步為主，步調輕鬆' },
+  { title: '主要看點', value: '老街、早市、街屋、文化園區', note: '步行即可串聯' },
+  { title: '適合安排', value: '早餐、半日遊、歷史散步', note: '上午出發最順' },
+  { title: '最新店家資訊', value: '請查看 Google 地圖', note: '營業狀態以地圖為準' },
+];
+
+const firstVisitStops = [
+  { name: '停車／下車', note: '車停外圍停車場，步行進入街區', query: '新化老街附近停車場' },
+  { name: '新化傳統市場', note: '早市小吃與在地日常的起點', query: '新化市場' },
+  { name: '三角湧', note: '中正路與中山路交會的舊商業核心', query: '新化三角湧' },
+  { name: '中正路巴洛克街屋', note: '抬頭看山牆、泥塑與商號立面', query: '新化老街' },
+  { name: '老街小吃與伴手禮', note: '邊走邊吃，順手帶老字號糕餅', query: '新化老街 美食' },
+  { name: '新化街役場', note: '圓弧立面的歷史建築，現為餐飲空間', query: '新化街役場' },
+  { name: '楊逵文學紀念館', note: '認識新化出身的文學家楊逵', query: '楊逵文學紀念館' },
+  { name: '大目降文化園區與武德殿', note: '日式宿舍群與武德殿收尾', query: '大目降文化園區' },
+];
+
+const architectureCards = [
+  {
+    image: facade02,
+    title: '山牆輪廓',
+    text: '每棟街屋的山牆形狀都不同，老鷹、圓拱與尖頂各有講究。',
+  },
+  {
+    image: facade04,
+    title: '花草與幾何泥塑',
+    text: '立面上的花草紋樣與幾何線腳，是匠師留下的手路。',
+  },
+  {
+    image: facade09,
+    title: '店號、姓氏與立面文字',
+    text: '商號與姓氏鑲在立面上，一條街就是一部商業史。',
+  },
+  {
+    image: facade16,
+    title: '騎樓柱、窗框與陽台',
+    text: '柱式、窗框比例與欄杆細節，藏著不同年代的語言。',
+  },
+];
+
+const foodEntries = [
+  {
+    title: '早上來吃什麼',
+    text: '從市場周邊的早餐開始，是最在地的逛法。',
+    href: '/food/breakfast/',
+  },
+  {
+    title: '傳統市場小吃',
+    text: '新化市場的熟食攤與小吃，是老街的日常味。',
+    href: '/food/market-food/',
+  },
+  {
+    title: '老字號糕餅與伴手禮',
+    text: '傳承數十年的餅舖與特產，適合帶回家。',
+    href: '/food/traditional-snacks/',
+  },
+  {
+    title: '在地正餐',
+    text: '逛完老街想坐下來好好吃一頓的選擇。',
+    href: '/food/restaurants/',
+  },
+];
+
+const transportEntries = [
+  {
+    title: '自駕停車怎麼選',
+    text: '哪一側進入比較順、車停哪裡開始散步最方便。',
+    href: '/transport/parking/',
+  },
+  {
+    title: '從臺南市區怎麼去',
+    text: '從臺南車站與高鐵站出發的路線與時間。',
+    href: '/transport/from-tainan-station/',
+  },
+  {
+    title: '搭大眾運輸前往',
+    text: '公車路線方向與下車後步行進入老街的方式。',
+    href: '/transport/public-transport/',
+  },
+];
+
+const walkingNearby = [
+  { name: '三角湧', href: '/history/sanjiaoyong/', image: streetCorner },
+  { name: '新化街役場', href: '/nearby/xinhua-street-office/', image: streetOffice },
+  { name: '楊逵文學紀念館', href: '/nearby/yang-kui-memorial/', image: yangKui },
+  { name: '大目降文化園區', href: '/nearby/damujiang-cultural-park/', image: wudeAnnex },
+  { name: '新化武德殿', href: '/nearby/wude-hall/', image: wudeHall },
+];
+
+const dayTripNearby = [
+  { name: '虎頭埤', href: '/nearby/hutoupi/', image: hutoupi },
+  { name: '新化林場', href: '/nearby/xinhua-forest/', image: xinhuaForest },
+];
+
+const homeFaq = [
+  {
+    q: '新化老街值得去嗎？',
+    a: '值得。新化老街保留整排巴洛克式街屋，而且仍是有市場、商店與居民生活的真實街區，加上步行可達的街役場、武德殿與大目降文化園區，適合安排半日的散步行程。',
+  },
+  {
+    q: '新化老街大約逛多久？',
+    a: '只逛老街本身約一小時；加上傳統市場、街役場與大目降文化園區，安排兩到三小時最剛好。若再串聯虎頭埤或新化林場，可以規劃一日遊。',
+  },
+  {
+    q: '上午和下午哪個比較適合？',
+    a: '推薦上午。傳統市場上午最熱鬧，早餐與小吃選擇多；夏天下午較熱，部分店家也在午後休息。傍晚光線斜射時則適合拍攝街屋立面。',
+  },
+  {
+    q: '新化老街需要門票嗎？',
+    a: '不需要。老街是開放的街區，全天可自由參觀；周邊的武德殿與大目降文化園區也是免費開放，個別展館的開放時間請以現場或官方公告為準。',
+  },
+  {
+    q: '附近哪裡可以停車？',
+    a: '老街周邊設有公有停車場與路邊停車格，建議把車停在外圍再步行進入，中正路老街段不適合邊開車邊找車位。詳細建議請看本站停車指南，即時車位請以 Google 地圖為準。',
+  },
+  {
+    q: '從臺南車站怎麼前往？',
+    a: '自駕走台20線約 30 分鐘；搭大眾運輸可在臺南車站附近搭乘往新化的公車，於新化站下車後步行即可抵達老街。班次請以 Google 地圖或公車動態資訊為準。',
+  },
+  {
+    q: '新化老街和大目降文化園區是同一個地方嗎？',
+    a: '不是同一個點，但步行只要幾分鐘。老街是中正路上的街屋群，大目降文化園區則是武德殿與日式宿舍群所在的文化聚落，兩者適合排進同一條散步路線。',
+  },
+  {
+    q: '下雨天適合去嗎？',
+    a: '可以。老街街屋設有騎樓，小雨時仍能沿騎樓散步；街役場、武德殿與紀念館都是室內或半室內空間，適合作為雨天的停留點。',
+  },
+  {
+    q: '適合帶長輩或小孩嗎？',
+    a: '適合。整條路線平坦、距離不長，沿途有騎樓遮蔭與休息點；建議放慢步調，把重點放在市場、街屋與文化園區，全程約兩小時內可完成。',
+  },
+  {
+    q: '店家營業資訊去哪裡看？',
+    a: '本站整理的是穩定的路線與看點；個別店家的營業時間、公休與菜單變動較快，出發前請直接在 Google 地圖查看店家頁面的最新資訊。',
+  },
+];
+
+const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)];
+---
+
+<BaseLayout schemas={schemas}>
+  <!-- Hero -->
+  <section class="relative">
+    <div class="absolute inset-0">
+      <Image
+        src={heroStreet}
+        alt="新化老街中正路巴洛克街屋與街道生活"
+        widths={[768, 1280, 1920]}
+        sizes="100vw"
+        class="h-full w-full object-cover"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/40 to-ink/20"></div>
+    </div>
+
+    <div class="relative mx-auto flex min-h-[70vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-32 md:px-6">
+      <p class="text-sm font-semibold tracking-widest text-paper-deep">
+        臺南市新化區 · 大目降歷史街區
+      </p>
+      <h1 class="display-title mt-3 max-w-2xl text-3xl font-bold leading-snug text-white md:text-5xl">
+        新化老街：美食、停車與大目降散步指南
+      </h1>
+      <p class="mt-4 max-w-xl leading-relaxed text-paper">
+        從傳統市場、巴洛克街屋到大目降文化園區，整理第一次造訪新化老街最需要的散步路線、交通與美食資訊。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <GoogleMapsButton href={googleMaps.place} label="在 Google 地圖開啟" />
+        <a
+          href="/routes/two-hours/"
+          class="inline-flex min-h-12 items-center justify-center rounded-full border border-white/70 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+        >
+          查看兩小時散步路線
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 快速到訪資訊 -->
+  <section class="mx-auto max-w-6xl px-4 py-12 md:px-6" aria-label="快速到訪資訊">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {quickFacts.map((fact) => (
+        <div class="rounded-3xl border border-line bg-white/60 p-5">
+          <p class="text-xs font-semibold tracking-wide text-patina">{fact.title}</p>
+          <p class="mt-2 font-bold leading-snug">{fact.value}</p>
+          <p class="mt-1.5 text-sm text-ink-soft">{fact.note}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 第一次來怎麼走 -->
+  <section class="bg-paper-deep/60 py-14" aria-labelledby="first-visit-title">
+    <div class="mx-auto max-w-6xl px-4 md:px-6">
+      <p class="text-sm font-semibold text-patina">入門路線</p>
+      <h2 id="first-visit-title" class="mt-1 text-2xl font-bold md:text-3xl">
+        第一次來怎麼走
+      </h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        從市場出發，沿中正路看街屋，最後走到大目降文化園區——這條路線把新化的市場生活、商業歷史與日式建築串在一起，全程步行即可完成。
+      </p>
+
+      <ol class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {firstVisitStops.map((stop, index) => (
+          <li class="flex gap-3 rounded-2xl border border-line bg-white/70 p-4">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brass/15 text-sm font-bold text-brass">
+              {index + 1}
+            </span>
+            <div>
+              <p class="font-bold leading-snug">{stop.name}</p>
+              <p class="mt-1 text-sm leading-relaxed text-ink-soft">{stop.note}</p>
+              <a
+                href={mapsSearch(stop.query)}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-1.5 inline-block text-xs font-semibold text-patina hover:text-brick"
+              >
+                Google 地圖 ↗
+              </a>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div class="mt-8">
+        <a
+          href="/guide/first-visit/"
+          class="inline-flex min-h-12 items-center rounded-full border border-brick px-6 py-3 font-semibold text-brick transition hover:bg-brick/5"
+        >
+          看完整的第一次造訪攻略
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 抬頭看建築 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="architecture-title">
+    <p class="text-sm font-semibold text-patina">建築散步</p>
+    <h2 id="architecture-title" class="mt-1 text-2xl font-bold md:text-3xl">
+      來新化老街，不要只看店面，也要記得抬頭。
+    </h2>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+      街屋二樓以上保留了最有辨識度的裝飾。沿著中正路慢慢走，可以比較不同年代、不同商號留下的立面語言。
+    </p>
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {architectureCards.map((card) => (
+        <a
+          href="/architecture/facade-details/"
+          class="group overflow-hidden rounded-3xl border border-line bg-white/60 transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <div class="aspect-[3/4] overflow-hidden bg-paper-deep">
+            <Image
+              src={card.image}
+              alt={`新化老街街屋立面細節：${card.title}`}
+              widths={[400, 800]}
+              sizes="(min-width: 768px) 300px, 50vw"
+              class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold group-hover:text-brick">{card.title}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-ink-soft">{card.text}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 美食入口 -->
+  <section class="bg-paper-deep/60 py-14" aria-labelledby="food-title">
+    <div class="mx-auto max-w-6xl px-4 md:px-6">
+      <p class="text-sm font-semibold text-patina">吃什麼</p>
+      <h2 id="food-title" class="mt-1 text-2xl font-bold md:text-3xl">新化老街美食怎麼挑</h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        按照旅客的需求分類，先想好想吃什麼，再對照 Google 地圖決定路線。
+      </p>
+
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {foodEntries.map((entry, index) => (
+          <a
+            href={entry.href}
+            class="group rounded-3xl border border-line bg-white/70 p-5 transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <p class="text-2xl font-bold text-brass/70">
+              {String(index + 1).padStart(2, '0')}
+            </p>
+            <h3 class="mt-2 font-bold group-hover:text-brick">{entry.title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{entry.text}</p>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-8">
+        <a
+          href="/food/"
+          class="inline-flex min-h-12 items-center rounded-full border border-brick px-6 py-3 font-semibold text-brick transition hover:bg-brick/5"
+        >
+          看美食總整理
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 停車與交通 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="transport-title">
+    <p class="text-sm font-semibold text-patina">怎麼去</p>
+    <h2 id="transport-title" class="mt-1 text-2xl font-bold md:text-3xl">停車與交通</h2>
+
+    <div class="mt-8 grid gap-4 md:grid-cols-3">
+      {transportEntries.map((entry) => (
+        <a
+          href={entry.href}
+          class="group rounded-3xl border border-line bg-white/60 p-6 transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <h3 class="font-bold group-hover:text-brick">{entry.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{entry.text}</p>
+          <p class="mt-3 text-sm font-semibold text-patina">閱讀指南 →</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Google 地圖 -->
+  <div class="py-6">
+    <GoogleMap />
+  </div>
+
+  <!-- 周邊景點 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="nearby-title">
+    <p class="text-sm font-semibold text-patina">下一站</p>
+    <h2 id="nearby-title" class="mt-1 text-2xl font-bold md:text-3xl">周邊景點</h2>
+
+    <h3 class="mt-8 font-bold text-ink-soft">步行文化圈</h3>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      {walkingNearby.map((place) => (
+        <a
+          href={place.href}
+          class="group overflow-hidden rounded-2xl border border-line bg-white/60 transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          {place.image ? (
+            <div class="aspect-[4/3] overflow-hidden bg-paper-deep">
+              <Image
+                src={place.image}
+                alt={place.name}
+                widths={[300, 600]}
+                sizes="(min-width: 768px) 220px, 50vw"
+                class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div class="flex aspect-[4/3] items-center justify-center bg-patina-light">
+              <span class="display-title text-lg font-bold text-patina">{place.name}</span>
+            </div>
+          )}
+          <p class="p-3 text-sm font-bold group-hover:text-brick">{place.name}</p>
+        </a>
+      ))}
+    </div>
+
+    <h3 class="mt-8 font-bold text-ink-soft">適合延伸成一日遊</h3>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      {dayTripNearby.map((place) => (
+        <a
+          href={place.href}
+          class="group flex items-center gap-4 overflow-hidden rounded-2xl border border-line bg-white/60 transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          {place.image ? (
+            <div class="h-24 w-36 shrink-0 overflow-hidden bg-paper-deep">
+              <Image
+                src={place.image}
+                alt={place.name}
+                widths={[300, 600]}
+                sizes="144px"
+                class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div class="flex h-24 w-36 shrink-0 items-center justify-center bg-patina-light">
+              <span class="font-bold text-patina">{place.name}</span>
+            </div>
+          )}
+          <div class="pr-4">
+            <p class="font-bold group-hover:text-brick">{place.name}</p>
+            <p class="mt-1 text-sm text-ink-soft">與老街組合成新化一日遊</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mx-auto max-w-3xl px-4 pb-16 md:px-6">
+    <FAQList items={homeFaq} title="新化老街常見問題" />
+    <p class="mt-4 text-sm text-ink-soft">
+      更多問題請看 <a href="/faq/" class="font-semibold text-brick hover:underline">完整 FAQ</a>。
+    </p>
+  </section>
+</BaseLayout>

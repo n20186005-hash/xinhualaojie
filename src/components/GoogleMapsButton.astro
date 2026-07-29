@@ -1,0 +1,28 @@
+---
+interface Props {
+  href: string;
+  label?: string;
+  variant?: 'primary' | 'secondary';
+}
+
+const {
+  href,
+  label = '在 Google 地圖開啟',
+  variant = 'primary',
+} = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={[
+    'inline-flex min-h-12 items-center justify-center rounded-full px-6 py-3',
+    'font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2',
+    variant === 'primary'
+      ? 'bg-brick text-white hover:bg-brick-dark'
+      : 'border border-brick text-brick hover:bg-brick/5',
+  ]}
+>
+  {label}
+</a>
