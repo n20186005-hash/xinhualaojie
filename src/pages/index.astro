@@ -5,12 +5,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import GoogleMapsButton from '../components/GoogleMapsButton.astro';
 import GoogleMap from '../components/GoogleMap.astro';
 import FAQList from '../components/FAQList.astro';
+import GoogleReviews from '../components/GoogleReviews.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import WeatherPanel from '../components/WeatherPanel.astro';
 import { googleMaps, mapsSearch } from '../lib/google-maps';
 import {
   websiteSchema,
   touristAttractionSchema,
   faqSchema,
 } from '../lib/schema';
+import { site } from '../data/site';
 
 import heroStreet from '../assets/hero-street.jpg';
 import streetCorner from '../assets/street-corner.jpg';
@@ -163,6 +167,8 @@ const homeFaq = [
   },
 ];
 
+const { value: googleRatingValue, count: googleRatingCount } = site.googleRating;
+
 const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)];
 ---
 
@@ -172,7 +178,7 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
     <div class="absolute inset-0">
       <Image
         src={heroStreet}
-        alt="新化老街中正路巴洛克街屋與街道生活"
+        alt="新化老街 Xinhua Old Street - 臺南市新化區中正路巴洛克街屋主街景"
         widths={[768, 1280, 1920]}
         sizes="100vw"
         class="h-full w-full object-cover"
@@ -187,10 +193,13 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
         臺南市新化區 · 大目降歷史街區
       </p>
       <h1 class="display-title mt-3 max-w-2xl text-3xl font-bold leading-snug text-white md:text-5xl">
-        新化老街：美食、停車與大目降散步指南
+        新化老街 Xinhua Old Street：美食、停車與大目降散步指南
       </h1>
+      <p class="mt-2 text-sm text-paper/80">
+        新化老街 → 新化區 → 臺南市 → 台灣
+      </p>
       <p class="mt-4 max-w-xl leading-relaxed text-paper">
-        從傳統市場、巴洛克街屋到大目降文化園區，整理第一次造訪新化老街最需要的散步路線、交通與美食資訊。
+        新化老街（Xinhua Old Street）位於臺南市新化區，是廣為人知、保留整排巴洛克街屋的百年歷史街區。從傳統市場、街屋立面到大目降文化園區，整理第一次造訪最需要的散步路線、交通與美食資訊。
       </p>
       <div class="mt-7 flex flex-wrap gap-3">
         <GoogleMapsButton href={googleMaps.place} label="在 Google 地圖開啟" />
@@ -201,6 +210,15 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
           查看兩小時散步路線
         </a>
       </div>
+      <a
+        href={googleMaps.reviews}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/25"
+      >
+        <span class="text-brass" aria-hidden="true">★</span>
+        {googleRatingValue} · {googleRatingCount.toLocaleString('zh-TW')} 則 Google 地圖評價 ↗
+      </a>
     </div>
   </section>
 
@@ -214,6 +232,32 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
           <p class="mt-1.5 text-sm text-ink-soft">{fact.note}</p>
         </div>
       ))}
+    </div>
+  </section>
+
+  <!-- Google 地圖評價 -->
+  <GoogleReviews />
+
+  <!-- 即時天氣與一週展望 -->
+  <WeatherPanel showHeading={false} />
+
+  <!-- 實用資訊入口 -->
+  <section class="mx-auto max-w-6xl px-4 pb-14 md:px-6" aria-label="實用資訊入口">
+    <div class="rounded-3xl border border-line bg-paper-deep/60 p-6 md:p-8">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">訪客服務與實用資訊</h2>
+          <p class="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">
+            季度遊覽策略、親子／攝影／無障礙行程方案，以及洗手間、停車、餐飲、住宿、商超與加油充電等設施的類型概述。
+          </p>
+        </div>
+        <a
+          href="/guide/visitor-info/"
+          class="inline-flex min-h-12 items-center rounded-full bg-brick px-6 py-3 font-semibold text-white transition hover:bg-brick-dark"
+        >
+          查看實用資訊
+        </a>
+      </div>
     </div>
   </section>
 
@@ -427,4 +471,7 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
       更多問題請看 <a href="/faq/" class="font-semibold text-brick hover:underline">完整 FAQ</a>。
     </p>
   </section>
+
+  <!-- 資料來源 -->
+  <SourcesSection />
 </BaseLayout>

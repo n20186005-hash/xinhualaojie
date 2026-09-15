@@ -1,5 +1,6 @@
 import { site } from '../data/site';
 import { googleMaps } from './google-maps';
+import heroStreet from '../assets/hero-street.jpg';
 
 export function websiteSchema() {
   return {
@@ -14,15 +15,25 @@ export function websiteSchema() {
 }
 
 export function touristAttractionSchema() {
+  const heroImageUrl = new URL(heroStreet.src, site.url).href;
   return {
     '@context': 'https://schema.org',
     '@type': 'TouristAttraction',
+    '@id': `${site.url}/#attraction`,
     name: site.name,
-    alternateName: site.englishName,
-    description: '新化老街美食、停車、交通、建築與大目降散步路線指南。',
+    alternateName: [
+      site.englishName,
+      `${site.englishName} (${site.addressLocality})`,
+      `臺南市${site.addressLocality}${site.name}`,
+      '新化中正路老街',
+    ],
+    description:
+      '新化老街（Xinhua Old Street）位於臺南市新化區，是保留整排巴洛克街屋的百年歷史街區。本站整理美食、停車、交通與大目降散步路線的完整造訪指南。',
     url: `${site.url}/`,
-    hasMap: googleMaps.place,
+    image: [heroImageUrl],
+    hasMap: googleMaps.share,
     isAccessibleForFree: true,
+    sameAs: [googleMaps.share, site.govtTourismUrl],
     touristType: ['家庭旅客', '美食旅客', '建築與攝影愛好者', '歷史文化旅客'],
     geo: {
       '@type': 'GeoCoordinates',
@@ -31,10 +42,11 @@ export function touristAttractionSchema() {
     },
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '中正路',
-      addressLocality: '新化區',
-      addressRegion: '臺南市',
-      addressCountry: 'TW',
+      streetAddress: site.streetAddress,
+      addressLocality: site.addressLocality,
+      addressRegion: site.addressRegion,
+      postalCode: site.postalCode,
+      addressCountry: site.addressCountry,
     },
   };
 }

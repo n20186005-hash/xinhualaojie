@@ -1,0 +1,71 @@
+---
+import { site } from '../data/site';
+import { googleMaps } from '../lib/google-maps';
+
+/**
+ * 資料來源區塊（SourcesSection）：
+ * 說明站內資料的同步時間與來源，強化 E-E-A-T 專業性。
+ */
+const { syncedAt } = site.googleRating;
+
+const sources = [
+  {
+    label: '評價',
+    note: `同步時間 ${syncedAt}`,
+    description: '評分與評價數同步自 Google 地圖用戶評價；版權歸原作者與 Google 地圖所有。',
+    link: { href: googleMaps.reviews, text: '在 Google 地圖查看全部評價 ↗' },
+  },
+  {
+    label: '位置與地圖',
+    note: 'Google 地圖',
+    description: '景點座標、地址與導航資訊以 Google 地圖為準。',
+    link: { href: googleMaps.share, text: '在 Google 地圖開啟新化老街 ↗' },
+  },
+  {
+    label: '官方旅遊資訊',
+    note: '臺南市政府觀光旅遊局',
+    description: '臺南市官方觀光資訊、活動與公告請以官方入口為準。',
+    link: { href: site.govtTourismUrl, text: '台南旅遊網（官方網站）↗' },
+  },
+  {
+    label: '圖片',
+    note: 'Wikimedia Commons',
+    description: '本站照片皆為攝影者實地拍攝之創用 CC 授權作品，詳細授權標示請見圖片授權頁。',
+    link: { href: '/image-credits/', text: '查看圖片授權標示' },
+  },
+];
+---
+
+<section aria-labelledby="sources-title" class="bg-paper-deep/60 py-14">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <p class="text-sm font-semibold text-patina">資料來源</p>
+    <h2 id="sources-title" class="mt-1 text-2xl font-bold md:text-3xl">
+      資料來源與同步說明
+    </h2>
+
+    <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+      {sources.map((source) => (
+        <li class="rounded-2xl border border-line bg-white/70 p-5">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <p class="font-bold">{source.label}</p>
+            <p class="text-xs font-semibold tracking-wide text-patina">{source.note}</p>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{source.description}</p>
+          <a
+            href={source.link.href}
+            target={source.link.href.startsWith('http') ? '_blank' : undefined}
+            rel={source.link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="mt-2 inline-block text-sm font-semibold text-brick hover:underline"
+          >
+            {source.link.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="mt-6 text-xs leading-relaxed text-ink-soft">
+      評價同步自 Google 地圖用戶評價，同步時間 {syncedAt}；版權歸原作者與 Google
+      地圖所有。本網站所展示的所有圖片產權及版權均歸原攝影者所有。
+    </p>
+  </div>
+</section>

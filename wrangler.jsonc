@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "xinhua-laojie",
+  "main": "./worker/index.js",
   "compatibility_date": "2026-07-29",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {

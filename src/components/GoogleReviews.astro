@@ -1,0 +1,90 @@
+---
+import { site } from '../data/site';
+import { googleMaps } from '../lib/google-maps';
+import GoogleMapsButton from './GoogleMapsButton.astro';
+
+/**
+ * Google 地圖評價展示區塊。
+ *
+ * 注意：評分與評價數僅在頁面上展示並標註來源，
+ * 不寫入任何 JSON-LD 結構化資料，以符合 Google
+ * 對第三方評價引用的規範（避免自我評分標記風險）。
+ */
+const { value, count, syncedAt } = site.googleRating;
+const fullStars = Math.floor(value);
+const halfStar = value - fullStars >= 0.5;
+const reviewCountLabel = count.toLocaleString('zh-TW');
+
+const starIcons = Array.from({ length: 5 }, (_, index) => {
+  if (index < fullStars) return 'full' as const;
+  if (index === fullStars && halfStar) return 'half' as const;
+  return 'empty' as const;
+});
+---
+
+<section
+  aria-labelledby="google-reviews-title"
+  class="mx-auto max-w-6xl px-4 py-14 md:px-6"
+>
+  <p class="text-sm font-semibold text-patina">Google 地圖評價</p>
+  <h2 id="google-reviews-title" class="mt-1 text-2xl font-bold md:text-3xl">
+    新化老街在 Google 地圖上的評價
+  </h2>
+
+  <div class="mt-6 rounded-3xl border border-line bg-white/60 p-6 md:p-8">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
+      <p class="display-title text-5xl font-bold leading-none">{value}</p>
+      <div>
+        <div class="flex items-center gap-1 text-brass" role="img" aria-label={`Google 地圖評分 ${value} / 5`}>
+          {starIcons.map((kind) => (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              class:list={['h-6 w-6', kind === 'empty' && 'text-line']}
+            >
+              {kind === 'half' ? (
+                <>
+                  <defs>
+                    <clipPath id="half-star-clip"><rect x="0" y="0" width="12" height="24" /></clipPath>
+                  </defs>
+                  <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.57l-5.9 3.1 1.13-6.58-4.78-4.66 6.6-.96L12 2.5z" fill="currentColor" clip-path="url(#half-star-clip)" />
+                  <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.57l-5.9 3.1 1.13-6.58-4.78-4.66 6.6-.96L12 2.5z" stroke="currentColor" stroke-width="1.5" />
+                </>
+              ) : (
+                <path
+                  d="M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.57l-5.9 3.1 1.13-6.58-4.78-4.66 6.6-.96L12 2.5z"
+                  fill={kind === 'full' ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  stroke-width={kind === 'full' ? 0 : 1.5}
+                />
+              )}
+            </svg>
+          ))}
+        </div>
+        <p class="mt-1.5 text-sm font-semibold">
+          共 {reviewCountLabel} 則 Google 地圖用戶評價
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-4 text-xs leading-relaxed text-ink-soft">
+      評分與評價數同步自 Google 地圖（Google Maps）用戶評價 · {syncedAt} ·
+      <a
+        href={googleMaps.reviews}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-semibold text-patina hover:text-brick hover:underline"
+      >點擊查看 Google 地圖全部評價 ↗</a>
+    </p>
+
+    <div class="mt-6">
+      <GoogleMapsButton href={googleMaps.reviews} label="在 Google 地圖查看全部評價" />
+    </div>
+
+    <p class="mt-4 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
+      本區評價同步自 Google 地圖用戶評價，同步時間 {syncedAt}；版權歸原作者與 Google
+      地圖所有。本站僅展示評分統計摘要，評價內容請以 Google 地圖頁面為準。
+    </p>
+  </div>
+</section>

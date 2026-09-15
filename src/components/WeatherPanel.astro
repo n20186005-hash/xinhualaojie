@@ -1,0 +1,458 @@
+---
+/**
+ * 新化老街即时天气与智能建议模块。
+ *
+ * 不只显示温度数字：依天气数据自动输出「穿搭 / 游玩 / 随身物品」
+ * 三类可执行建议，恶劣天气时置顶风险提醒。
+ * 数据由本站服务端（Cloudflare Worker /api/weather）取回并快取。
+ */
+
+interface Props {
+  /** 是否显示区块标题与说明。 */
+  showHeading?: boolean;
+}
+
+const { showHeading = true } = Astro.props;
+---
+
+<section aria-labelledby="weather-title" class="mx-auto max-w-6xl px-4 py-14 md:px-6">
+  {showHeading && (
+    <div>
+      <p class="text-sm font-semibold text-patina">天氣</p>
+      <h2 id="weather-title" class="mt-1 text-2xl font-bold md:text-3xl">
+        新化老街天氣與出遊建議
+      </h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        看完不用自己换算「这天气该穿什么、要不要带伞」——直接告诉你怎么准备。
+      </p>
+    </div>
+  )}
+
+  <div id="weather-panel" class="mt-6" data-weather-panel>
+    <!-- 载入中的骨架 -->
+    <div data-weather-loading class="rounded-3xl border border-line bg-white/60 p-6">
+      <div class="flex items-center gap-3 text-ink-soft">
+        <span class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-line border-t-patina" aria-hidden="true"></span>
+        <p class="text-sm font-semibold">正在取得新化即時天氣…</p>
+      </div>
+    </div>
+
+    <!-- 载入失败时的降级 -->
+    <div data-weather-error hidden class="rounded-3xl border border-line bg-white/60 p-6">
+      <p class="font-bold">暫時無法取得天氣資料</p>
+      <p class="mt-2 text-sm leading-relaxed text-ink-soft">
+        天氣資料偶爾會讀取失敗；出發前請以中央氣象署或 Google 的天氣資訊為準，雨天行程可參考我們的雨天散步建議。
+      </p>
+    </div>
+
+    <noscript>
+      <div class="rounded-3xl border border-line bg-white/60 p-6 text-sm leading-relaxed text-ink-soft">
+        天氣模組需要啟用 JavaScript 才能顯示。出發前請參考中央氣象署或 Google 的天氣資訊。
+      </div>
+    </noscript>
+  </div>
+
+  <p class="mt-4 text-xs leading-relaxed text-ink-soft">
+    天氣資料來源：Open-Meteo · 以新化老街（臺南市新化區）座標自動更新 ·
+    氣象警特報與颱風動態請以中央氣象署正式發布為準。
+  </p>
+</section>
+
+<style>
+  .forecast-scroll {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(112px, 1fr);
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .forecast-scroll {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(7, 1fr);
+      overflow-x: visible;
+    }
+  }
+</style>
+
+<script>
+  type WeatherPayload = {
+    current?: {
+      temperature_2m?: number;
+      relative_humidity_2m?: number;
+      apparent_temperature?: number;
+      is_day?: number;
+      precipitation?: number;
+      weather_code?: number;
+      wind_speed_10m?: number;
+    };
+    daily?: {
+      time?: string[];
+      weather_code?: number[];
+      temperature_2m_max?: number[];
+      temperature_2m_min?: number[];
+      precipitation_probability_max?: number[];
+      precipitation_sum?: number[];
+      uv_index_max?: number[];
+    };
+  };
+
+  const LATITUDE = 23.0352429;
+  const LONGITUDE = 120.3082454;
+  const DIRECT_API_URL =
+    `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}` +
+    '&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m' +
+    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,uv_index_max' +
+    '&timezone=Asia%2FTaipei&forecast_days=7';
+
+  /** WMO 天氣代碼 → 中文描述與圖示。 */
+  const WEATHER_CODES: Record<number, { text: string; icon: string }> = {
+    0: { text: '晴朗', icon: '☀️' },
+    1: { text: '大致晴朗', icon: '🌤️' },
+    2: { text: '局部多雲', icon: '⛅' },
+    3: { text: '陰天', icon: '☁️' },
+    45: { text: '霧', icon: '🌫️' },
+    48: { text: '濃霧', icon: '🌫️' },
+    51: { text: '小毛雨', icon: '🌦️' },
+    53: { text: '毛雨', icon: '🌦️' },
+    55: { text: '濃毛雨', icon: '🌦️' },
+    56: { text: '凍毛雨', icon: '🌧️' },
+    57: { text: '濃凍毛雨', icon: '🌧️' },
+    61: { text: '小雨', icon: '🌦️' },
+    63: { text: '中雨', icon: '🌧️' },
+    65: { text: '大雨', icon: '🌧️' },
+    66: { text: '凍雨', icon: '🌧️' },
+    67: { text: '強凍雨', icon: '🌧️' },
+    71: { text: '小雪', icon: '🌨️' },
+    73: { text: '中雪', icon: '🌨️' },
+    75: { text: '大雪', icon: '❄️' },
+    77: { text: '雪粒', icon: '🌨️' },
+    80: { text: '局部陣雨', icon: '🌦️' },
+    81: { text: '陣雨', icon: '🌧️' },
+    82: { text: '強陣雨', icon: '⛈️' },
+    85: { text: '局部陣雪', icon: '🌨️' },
+    86: { text: '強陣雪', icon: '❄️' },
+    95: { text: '雷雨', icon: '⛈️' },
+    96: { text: '雷雨夾冰雹', icon: '⛈️' },
+    99: { text: '強雷雨夾冰雹', icon: '⛈️' },
+  };
+
+  const DRIZZLE_CODES = [51, 53, 55, 56, 57, 61, 80];
+  const HEAVY_RAIN_CODES = [63, 65, 66, 67, 81, 82];
+  const THUNDER_CODES = [95, 96, 99];
+
+  function describeWeather(code: number | undefined): { text: string; icon: string } {
+    if (code === undefined) return { text: '—', icon: '🌡️' };
+    return WEATHER_CODES[code] ?? { text: '多變', icon: '🌥️' };
+  }
+
+  /** 風速（km/h）換算蒲福風級。 */
+  function beaufort(kmh: number): number {
+    const bounds = [1, 6, 12, 20, 29, 39, 50, 62, 75, 89, 103, 118];
+    let level = 0;
+    bounds.forEach((bound, i) => {
+      if (kmh >= bound) level = i + 1;
+    });
+    return level;
+  }
+
+  function windLabel(kmh: number | undefined): string {
+    if (kmh === undefined) return '—';
+    const level = beaufort(kmh);
+    return level <= 2 ? '微風' : `風力 ${level} 級`;
+  }
+
+  function uvLabel(uv: number | undefined): string {
+    if (uv === undefined) return '—';
+    if (uv < 3) return '弱';
+    if (uv < 5) return '中等';
+    if (uv < 7) return '偏強';
+    if (uv < 11) return '很強';
+    return '極強';
+  }
+
+  function round(value: number | undefined): string {
+    return value === undefined ? '—' : Math.round(value).toString();
+  }
+
+  /** 取今日（臺北時區）日期字串，與 daily.time 對齊。 */
+  function todayString(): string {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' }).format(new Date());
+  }
+
+  interface Advice {
+    travel: string[];
+    play: string[];
+    carry: string[];
+    risks: string[];
+  }
+
+  /**
+   * 依天气数据组合出游客可执行的建议。
+   * 新化老街为城市街区场景：户外以散步逛街为主，
+   * 室内备选为市场、文化场馆；风险关注招牌鹰架、雷雨、湿滑与高温。
+   */
+  function buildAdvice(data: WeatherPayload): Advice {
+    const cur = data.current ?? {};
+    const daily = data.daily ?? {};
+
+    const times = daily.time ?? [];
+    let todayIndex = times.indexOf(todayString());
+    if (todayIndex < 0) todayIndex = 0;
+
+    const tmax = daily.temperature_2m_max?.[todayIndex];
+    const tmin = daily.temperature_2m_min?.[todayIndex];
+    const rainChance = daily.precipitation_probability_max?.[todayIndex] ?? 0;
+    const rainSum = daily.precipitation_sum?.[todayIndex] ?? 0;
+    const uv = daily.uv_index_max?.[todayIndex] ?? 0;
+    const windKmh = cur.wind_speed_10m ?? 0;
+    const windLevel = beaufort(windKmh);
+    const code = cur.weather_code ?? -1;
+    const raining = (cur.precipitation ?? 0) > 0;
+
+    const drizzle = DRIZZLE_CODES.includes(code) || (raining && !HEAVY_RAIN_CODES.includes(code) && !THUNDER_CODES.includes(code));
+    const heavyRain = HEAVY_RAIN_CODES.includes(code);
+    const thunder = THUNDER_CODES.includes(code);
+    const fog = code === 45 || code === 48;
+    const sunny = code <= 1;
+    const cloudy = code === 2 || code === 3;
+    const wetDay = rainChance >= 60 || drizzle || heavyRain || thunder;
+
+    const travel: string[] = [];
+    const play: string[] = [];
+    const carry: string[] = [];
+    const risks: string[] = [];
+
+    // ── 风险提醒（最优先，条件触发才显示） ──
+    if (thunder) {
+      risks.push('雷雨期間別在樹下或空曠處逗留，盡快進到騎樓或室內，暫停戶外散步。');
+    }
+    if (windLevel >= 7) {
+      risks.push(`風力達 ${windLevel} 級：留意老街的招牌、鷹架與掉落物，避免長時間停留在空曠路口。`);
+    }
+    if (rainSum >= 50) {
+      risks.push('今日累積雨量偏大：避開低窪積水路段，不要涉水通行。');
+    }
+    if (tmax !== undefined && tmax >= 38) {
+      risks.push('高溫警訊：避免正午長時間在外，留意中暑徵兆，適時進室內休息。');
+    }
+    if (fog) {
+      risks.push('濃霧能見度差：騎車開車務必減速慢行，步行也留意路口來車。');
+    }
+
+    // ── 出行穿搭 ──
+    if (tmax !== undefined && tmax >= 32) {
+      travel.push('氣溫偏高，穿輕薄透氣的衣物就好，正午時段盡量別曝曬在外。');
+    }
+    if (tmax !== undefined && tmin !== undefined && tmax - tmin > 8) {
+      travel.push(`晝夜溫差有 ${Math.round(tmax - tmin)} 度，帶一件方便穿脫的薄外套。`);
+    }
+    if (tmax !== undefined && tmax <= 12) {
+      travel.push('氣溫偏低，厚外套、圍巾都用上，早晚在外面走會更冷。');
+    }
+    if (windLevel >= 5 && windLevel < 7) {
+      travel.push('風力偏大：帽子容易吹落，也不建議穿寬鬆長裙。');
+    }
+    if (heavyRain || (rainSum >= 20 && rainChance >= 60)) {
+      travel.push('風雨較大，建議穿防水外套與防滑好走的鞋，風大時長柄傘不好撐，雨衣更實用。');
+    } else if (drizzle || rainChance >= 60) {
+      travel.push('天氣偏濕，選防滑好走的鞋，避免容易濕透的薄布鞋。');
+    }
+    if (travel.length === 0) {
+      travel.push(sunny || cloudy ? '天氣舒適，一般散步穿搭即可。' : '天氣平穩，依個人習慣穿搭即可。');
+    }
+
+    // ── 游玩安排（街区场景） ──
+    if (thunder) {
+      play.push('雷雨天以室內為主：市場、街役場、文學紀念館都是好選擇，等雨過再出來走。');
+    } else if (heavyRain) {
+      play.push('雨勢較大，不建議長時間戶外行程；以市場採買與文化場館參觀為主，騎樓下移動。');
+    } else if (drizzle) {
+      play.push('飄著小雨，路面濕滑注意腳步；老街騎樓可以連續遮雨，邊躲邊逛剛剛好。');
+    } else if (rainChance >= 60) {
+      play.push('降雨機率偏高：優先排街役場、文學紀念館等室內場館，戶外散步看天氣狀況再調整。');
+    } else if (sunny) {
+      play.push('天氣晴好，最適合慢慢逛街看街屋立面；光線漂亮，拍照也好看。');
+    } else if (cloudy) {
+      play.push('光線柔和不曬，很適合拍照與長時間戶外散步，是逛老街的舒服天氣。');
+    }
+    if (tmax !== undefined && tmax >= 32) {
+      play.push('正午前後最熱，建議上午或傍晚再逛街屋主段，中間找市場或冰品歇腳。');
+    }
+    if (play.length === 0) {
+      play.push('天氣平穩，照原本的散步路線走就可以了。');
+    }
+
+    // ── 随身物品（只列用得上的） ──
+    if (wetDay || raining) {
+      carry.push('雨具（風大時雨衣比長柄傘好用）');
+    }
+    if (uv >= 5 || (tmax !== undefined && tmax >= 32)) {
+      carry.push('防晒乳、帽子、墨鏡');
+    }
+    if (tmax !== undefined && tmax >= 32) {
+      carry.push('充足飲用水');
+    }
+    if (tmin !== undefined && tmin <= 12) {
+      carry.push('保暖圍巾或手套');
+    }
+    if (fog) {
+      carry.push('口罩');
+    }
+    if (carry.length === 0) {
+      carry.push('輕便小背包與飲用水就夠了');
+    }
+
+    return { travel, play, carry, risks };
+  }
+
+  const WEEKDAYS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+
+  function dayLabel(dateStr: string, index: number): string {
+    if (index === 0) return '今天';
+    if (index === 1) return '明天';
+    const date = new Date(`${dateStr}T00:00:00`);
+    return WEEKDAYS[date.getDay()] ?? dateStr.slice(5);
+  }
+
+  function listBlock(title: string, icon: string, items: string[]): string {
+    return `
+      <div class="rounded-2xl border border-line bg-white/50 p-4">
+        <p class="flex items-center gap-2 text-sm font-bold">
+          <span aria-hidden="true">${icon}</span>${title}
+        </p>
+        <ul class="mt-2 space-y-1.5 text-sm leading-relaxed text-ink-soft">
+          ${items.map((item) => `<li class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brass" aria-hidden="true"></span><span>${item}</span></li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  function render(data: WeatherPayload): string {
+    const current = data.current ?? {};
+    const condition = describeWeather(current.weather_code);
+    const advice = buildAdvice(data);
+
+    const times = data.daily?.time ?? [];
+    let todayIndex = times.indexOf(todayString());
+    if (todayIndex < 0) todayIndex = 0;
+    const tmax = data.daily?.temperature_2m_max?.[todayIndex];
+    const tmin = data.daily?.temperature_2m_min?.[todayIndex];
+    const rainChance = data.daily?.precipitation_probability_max?.[todayIndex];
+    const uv = data.daily?.uv_index_max?.[todayIndex] ?? 0;
+    const windKmh = current.wind_speed_10m;
+
+    const summaryChips: string[] = [];
+    if (tmax !== undefined && tmin !== undefined) {
+      summaryChips.push(`今日 ${round(tmin)}–${round(tmax)}°C`);
+    }
+    if (current.apparent_temperature !== undefined) {
+      summaryChips.push(`體感像 ${round(current.apparent_temperature)}°C`);
+    }
+    if (rainChance !== undefined) {
+      summaryChips.push(`降雨 ${rainChance}%`);
+    }
+    summaryChips.push(`紫外線${uvLabel(uv)}`);
+    summaryChips.push(windLabel(windKmh));
+
+    const daily = data.daily ?? {};
+    const days = (daily.time ?? []).map((dateStr, index) => {
+      const day = describeWeather(daily.weather_code?.[index]);
+      const probability = daily.precipitation_probability_max?.[index];
+      return `
+        <div class="rounded-2xl border border-line bg-white/60 p-3 text-center">
+          <p class="text-xs font-semibold tracking-wide text-patina">${dayLabel(dateStr, index)}</p>
+          <p class="mt-1.5 text-2xl" aria-hidden="true">${day.icon}</p>
+          <p class="mt-1 text-xs text-ink-soft">${day.text}</p>
+          <p class="mt-1.5 text-sm font-bold">${round(daily.temperature_2m_max?.[index])}° / ${round(daily.temperature_2m_min?.[index])}°</p>
+          <p class="mt-1 text-xs text-ink-soft">降雨 ${probability === undefined ? '—' : `${probability}%`}</p>
+        </div>
+      `;
+    });
+
+    const riskBlock =
+      advice.risks.length > 0
+        ? `
+      <div class="rounded-2xl border border-brick/40 bg-brick/10 p-4">
+        <p class="flex items-center gap-2 text-sm font-bold text-brick">
+          <span aria-hidden="true">⚠️</span>風險提醒
+        </p>
+        <ul class="mt-2 space-y-1.5 text-sm leading-relaxed text-brick/90">
+          ${advice.risks.map((risk) => `<li class="flex gap-2"><span aria-hidden="true">•</span><span>${risk}</span></li>`).join('')}
+        </ul>
+      </div>
+    `
+        : `
+      <p class="flex items-center gap-2 rounded-2xl border border-patina/30 bg-patina-light/60 px-4 py-3 text-sm font-semibold text-patina">
+        <span aria-hidden="true">✅</span>目前無需特別注意的天氣風險，可安心規劃行程。
+      </p>
+    `;
+
+    return `
+      <div class="rounded-3xl border border-line bg-white/60 p-6 md:p-8">
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div class="flex items-center gap-4">
+            <p class="text-5xl" aria-hidden="true">${condition.icon}</p>
+            <div>
+              <p class="display-title text-5xl font-bold leading-none">
+                ${round(current.temperature_2m)}<span class="align-top text-2xl">°C</span>
+              </p>
+              <p class="mt-1 text-sm font-semibold">${condition.text}</p>
+            </div>
+          </div>
+          <ul class="flex flex-wrap gap-2">
+            ${summaryChips
+              .map(
+                (chip) =>
+                  `<li class="rounded-full border border-line bg-white/70 px-3 py-1.5 text-xs font-semibold text-ink-soft">${chip}</li>`,
+              )
+              .join('')}
+          </ul>
+        </div>
+
+        <div class="mt-6 space-y-4">
+          ${riskBlock}
+          <div class="grid gap-3 md:grid-cols-3">
+            ${listBlock('出行穿搭', '👕', advice.travel)}
+            ${listBlock('遊玩安排', '🚶', advice.play)}
+            ${listBlock('隨身物品', '🎒', advice.carry)}
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-sm font-semibold tracking-wide text-patina">未來一週展望</p>
+          <div class="forecast-scroll mt-3">
+            ${days.join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadWeather(): Promise<WeatherPayload> {
+    try {
+      const response = await fetch('/api/weather');
+      if (!response.ok) throw new Error('proxy_error');
+      return (await response.json()) as WeatherPayload;
+    } catch {
+      const response = await fetch(DIRECT_API_URL);
+      if (!response.ok) throw new Error('direct_error');
+      return (await response.json()) as WeatherPayload;
+    }
+  }
+
+  const panel = document.querySelector<HTMLElement>('[data-weather-panel]');
+  if (panel) {
+    try {
+      const data = await loadWeather();
+      const loading = panel.querySelector('[data-weather-loading]');
+      loading?.remove();
+      panel.insertAdjacentHTML('beforeend', render(data));
+    } catch {
+      const loading = panel.querySelector('[data-weather-loading]');
+      loading?.remove();
+      panel.querySelector('[data-weather-error]')?.removeAttribute('hidden');
+    }
+  }
+</script>

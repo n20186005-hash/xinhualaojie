@@ -3,6 +3,12 @@ import { mainNav } from '../data/navigation';
 import { googleMaps } from '../lib/google-maps';
 
 const currentPath = Astro.url.pathname;
+
+/** 取得目前頁面對應的主選單項目（路徑最長者優先，避免前綴互相覆蓋）。 */
+const activeHref = [...mainNav]
+  .sort((a, b) => b.href.length - a.href.length)
+  .find((item) => currentPath === item.href || currentPath.startsWith(`${item.href}`))
+  ?.href;
 ---
 
 <header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
@@ -34,10 +40,10 @@ const currentPath = Astro.url.pathname;
           <li>
             <a
               href={item.href}
-              aria-current={currentPath.startsWith(item.href) ? 'page' : undefined}
+              aria-current={currentPath === item.href ? 'page' : undefined}
               class:list={[
                 'rounded-full px-3 py-2 text-sm font-medium transition hover:bg-paper-deep',
-                currentPath.startsWith(item.href) ? 'text-brick' : 'text-ink',
+                activeHref === item.href ? 'text-brick' : 'text-ink',
               ]}
             >
               {item.label}

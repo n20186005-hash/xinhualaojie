@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import WeatherPanel from '../../components/WeatherPanel.astro';
+import { mapsSearch, googleMaps } from '../../lib/google-maps';
+import { breadcrumbSchema, faqSchema } from '../../lib/schema';
+
+const pageTitle = '訪客服務與實用資訊';
+const description =
+  '新化老街即時天氣與一週展望、季節遊覽策略、親子／攝影／無障礙行程建議，以及停車、洗手間、餐飲、住宿、商超與加油充電等設施的類型中立概述。';
+
+/** 季度遊覽策略：依臺南新化常年氣候平均資料概估。 */
+const seasonalStrategy = [
+  {
+    season: '春季（3–5 月）',
+    climate: '均溫約 22–26°C，回暖穩定，降雨漸增',
+    rain: '梅雨季前段，偶有陣雨',
+    crowd: '舒適宜人，人潮中等',
+    advice: '最佳散步季節之一，注意午後天氣變化',
+    carry: '薄外套、輕便雨具',
+  },
+  {
+    season: '夏季（6–9 月）',
+    climate: '均溫約 28–30°C，日照強、濕度高',
+    rain: '午後雷陣雨與颱風季，雨勢集中',
+    crowd: '上午涼爽、中午人少，雨天遊客少',
+    advice: '建議上午出發，避開正午曝曬；留意颱風警報',
+    carry: '防曬、帽子、飲水、雨具',
+  },
+  {
+    season: '秋季（10–11 月）',
+    climate: '均溫約 24–27°C，乾爽舒適',
+    rain: '降雨明顯減少，晴日多',
+    crowd: '出遊旺季，假日人潮較多',
+    advice: '全年最穩定的造訪時段，適合拍照與長時間散步',
+    carry: '防曬即可，早晚微涼可帶薄外套',
+  },
+  {
+    season: '冬季（12–2 月）',
+    climate: '均溫約 17–20°C，乾燥少雨',
+    rain: '降雨量最低的季節',
+    crowd: '舒適宜人，年節前後人潮較多',
+    advice: '早晚溫差大，白天散步舒適；年節留意商家公休',
+    carry: '外套、保暖層',
+  },
+];
+
+/** 按人群定制的遊覽方案。 */
+const audiencePlans = [
+  {
+    audience: '親子家庭',
+    icon: '👨‍👩‍👧‍👦',
+    pace: '步調放慢 · 約 2 小時',
+    points: [
+      '從傳統市場出發，邊走邊吃讓孩子保持興趣',
+      '主看點放在街屋立面的山牆與動物泥塑，像尋寶遊戲',
+      '街役場與大目降文化園區都有遮蔭與休息點',
+      '避開正午時段，夏季以上午 9–11 點最舒適',
+    ],
+    route: { href: '/routes/two-hours/', label: '看兩小時散步路線' },
+  },
+  {
+    audience: '攝影與建築愛好者',
+    icon: '📷',
+    pace: '深度停留 · 半日',
+    points: [
+      '清晨與傍晚光線斜射，最能表現立面的泥塑層次',
+      '街屋山牆、商號文字與騎樓柱式是主要拍攝題材',
+      '上午市場時段有人文場景，但請尊重居民與攤商',
+      '搭配街役場、武德殿與日式宿舍群，湊成建築專題',
+    ],
+    route: { href: '/routes/half-day/', label: '看半日遊路線' },
+  },
+  {
+    audience: '低體力與無障礙需求',
+    icon: ' ♿',
+    pace: '輕鬆短程 · 1–1.5 小時',
+    points: [
+      '老街路段地勢平坦，騎樓可連續遮蔭通行',
+      '以中正路街屋群為主軸，不必勉強走完全程',
+      '市場、街役場與文化園區周邊設有洗手間與休息點',
+      '建議平日前往，人潮較少、行走更從容',
+    ],
+    route: { href: '/routes/two-hours/', label: '看散步路線' },
+  },
+];
+
+/** 訪客服務與周邊設施（類型中立，不推薦特定商家）。 */
+const facilityGroups = [
+  {
+    title: '洗手間',
+    note: '公有場所優先',
+    description:
+      '傳統市場、公有停車場周邊與文化園區一帶設有公共洗手間；逛街途中也可以向文化場館或餐飲店家借用。建議在市場或園區停留時先使用。',
+    query: '公廁',
+  },
+  {
+    title: '停車',
+    note: '公有路外停車場為主',
+    description:
+      '老街外圍設有公有停車場與路邊停車格，步行 5–10 分鐘可達街區核心。假日車位較滿，建議早到或停遠一點再步行進入。',
+    query: '停車場',
+  },
+  {
+    title: '餐飲',
+    note: '類型概述',
+    description:
+      '街區餐飲以傳統市場早市小吃、老字號糕餅伴手禮與一般正餐店家為主，型態集中在騎樓小店與市場攤位；營業時間以各店家現場公告為準。',
+    query: '餐廳',
+  },
+  {
+    title: '住宿',
+    note: '適合一日遊的街區',
+    description:
+      '老街屬於生活街區，住宿型態以鄰近的中小型旅宿為主，選擇不多；多數旅客會住宿在臺南市區，安排新化為半日或一日行程。',
+    query: '住宿',
+  },
+  {
+    title: '商超與補給',
+    note: '補水與簡單補給',
+    description:
+      '街區周邊有連鎷超市與便利商店型態的通路，散步途中補水、買簡單點心都很方便；市場營業時段內也有飲品攤位。',
+    query: '便利商店',
+  },
+  {
+    title: '加油與充電',
+    note: '自駕旅客參考',
+    description:
+      '主要聯外道路沿線設有加油站與電動車充電站型態的服務點；電動車出發前建議先確認充電樁位置與使用狀況。',
+    query: '加油站',
+  },
+];
+
+/** 通用遊覽路線（連回本站既有路線指南）。 */
+const generalRoutes = [
+  {
+    title: '兩小時散步',
+    time: '約 2 小時',
+    summary: '市場 → 中正路街屋 → 街役場 → 大目降文化園區，把核心看點一次走完。',
+    href: '/routes/two-hours/',
+  },
+  {
+    title: '半日遊',
+    time: '約 3–4 小時',
+    summary: '在散步路線上放慢速度，加入楊逵文學紀念館與早市小吃，適合不趕時間的半日。',
+    href: '/routes/half-day/',
+  },
+  {
+    title: '一日遊',
+    time: '約 6–8 小時',
+    summary: '老街上午、下午延伸虎頭埤或新化林場，把市區街區與自然景點串成完整一天。',
+    href: '/routes/one-day/',
+  },
+];
+
+/** 科普與訪客責任。 */
+const responsibilities = [
+  {
+    title: '愛護文化資產',
+    text: '街屋立面的泥塑與裝飾已有近百年歷史，請只用眼睛與鏡頭欣賞，不觸摸、不攀爬、不刻畫。',
+  },
+  {
+    title: '尊重居民生活',
+    text: '老街是仍在生活的街區，清晨與傍晚是居民的日常時段；參觀時降低音量，拍照前留意是否打擾店家與住戶。',
+  },
+  {
+    title: '騎樓與巷道禮讓',
+    text: '騎樓同時是行人通道與店家工作空間；行走時靠內側通行，遇到卸貨或攤商作業請繞行或耐心等候。',
+  },
+  {
+    title: '垃圾不落地',
+    text: '街區垃圾桶有限，逛市場與吃小吃時請自行攜帶小垃圾袋，離開前將垃圾帶到集中點丟棄。',
+  },
+  {
+    title: '市場攤位攝影禮儀',
+    text: '拍攝攤商與顧客前，先以眼神或手勢詢問意願；與人互動時保持禮貌，讓下一代攝影者也能拍到真實的市場風景。',
+  },
+  {
+    title: '支持在地但不代言',
+    text: '本站以非營利立場介紹街區型態與文化脈絡，不推薦特定商家；消費與否由旅客自行判斷，體驗也歡迎回饋分享。',
+  },
+];
+
+const visitorFaq = [
+  {
+    q: '新化老街有公共洗手間嗎？',
+    a: '有。傳統市場、公有停車場周邊與大目降文化園區一帶設有公共洗手間，建議在市場或園區停留時先使用，散步途中再向文化場館借用。',
+  },
+  {
+    q: '輪椅或嬰兒車可以在老街通行嗎？',
+    a: '可以。中正路街屋段地勢平坦，騎樓多可連續通行；部分騎樓可能有臺階或攤位，必要時改走騎樓外側人行面即可。',
+  },
+  {
+    q: '附近有超市或便利商店嗎？',
+    a: '有。街區周邊有連鎖超市與便利商店型態的通路，散步途中補水、買簡單點心都很方便，實際位置可在 Google 地圖查詢。',
+  },
+  {
+    q: '電動車方便充電嗎？',
+    a: '主要聯外道路沿線設有加油站與充電站型態的服務點，但充電樁數量有限，長程旅行建議出發前先確認位置與使用狀況。',
+  },
+  {
+    q: '什麼季節最適合去新化老街？',
+    a: '秋季（10–11 月）天氣乾爽穩定，是全年最舒適的時段；春季也舒適但偶有陣雨。夏季建議上午出發避開曝曬，冬季乾燥涼爽、早晚溫差大。',
+  },
+];
+
+const schemas = [
+  breadcrumbSchema([
+    { name: '首頁', path: '/' },
+    { name: '實用資訊', path: '/guide/visitor-info/' },
+  ]),
+  faqSchema(visitorFaq),
+];
+---
+
+<BaseLayout pageTitle={pageTitle} description={description} schemas={schemas}>
+  <div class="mx-auto max-w-6xl px-4 py-10 md:px-6">
+    <Breadcrumbs items={[{ name: '首頁', path: '/' }, { name: '實用資訊' }]} />
+    <h1 class="mt-4 text-3xl font-bold md:text-4xl">訪客服務與實用資訊</h1>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+      天氣怎麼看、季節怎麼選、不同人怎麼走、到了當地有哪些設施——出發前需要的實用資訊都在這一頁。本站為非營利科普網站，設施資訊以類型概述為主，不推薦特定商家。
+    </p>
+  </div>
+
+  <!-- 即時天氣與一週展望 -->
+  <WeatherPanel />
+
+  <!-- 季度遊覽策略 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="season-title">
+    <p class="text-sm font-semibold text-patina">季節策略</p>
+    <h2 id="season-title" class="mt-1 text-2xl font-bold md:text-3xl">季度遊覽策略表</h2>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+      依新化常年氣候平均資料概估的四季概況，協助你判斷出遊時機與行前準備；實際天氣請以出發前的預報為準。
+    </p>
+
+    <div class="mt-8 overflow-x-auto rounded-2xl border border-line">
+      <table class="w-full min-w-[860px] text-sm">
+        <thead>
+          <tr class="bg-paper-deep text-left">
+            <th class="px-4 py-3 font-semibold">季節</th>
+            <th class="px-4 py-3 font-semibold">氣候概況</th>
+            <th class="px-4 py-3 font-semibold">降雨特性</th>
+            <th class="px-4 py-3 font-semibold">遊覽體驗</th>
+            <th class="px-4 py-3 font-semibold">策略建議</th>
+            <th class="px-4 py-3 font-semibold">攜帶物品</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line bg-white/50">
+          {seasonalStrategy.map((row) => (
+            <tr>
+              <td class="px-4 py-3 font-bold whitespace-nowrap">{row.season}</td>
+              <td class="px-4 py-3">{row.climate}</td>
+              <td class="px-4 py-3">{row.rain}</td>
+              <td class="px-4 py-3">{row.crowd}</td>
+              <td class="px-4 py-3">{row.advice}</td>
+              <td class="px-4 py-3 text-ink-soft">{row.carry}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-xs text-ink-soft">
+      氣候數值依常年（多年期）氣候平均資料概估，逐年實際狀況會有差異。
+    </p>
+  </section>
+
+  <!-- 按人群定制 -->
+  <section class="bg-paper-deep/60 py-14" aria-labelledby="audience-title">
+    <div class="mx-auto max-w-6xl px-4 md:px-6">
+      <p class="text-sm font-semibold text-patina">怎麼走</p>
+      <h2 id="audience-title" class="mt-1 text-2xl font-bold md:text-3xl">按人群定制的遊覽方案</h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        同一條老街，不同的出行組合有不同的走法。依你的成員與節奏選擇適合的方案。
+      </p>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        {audiencePlans.map((plan) => (
+          <div class="flex flex-col rounded-3xl border border-line bg-white/70 p-6">
+            <div class="flex items-center gap-3">
+              <p class="text-3xl" aria-hidden="true">{plan.icon}</p>
+              <div>
+                <h3 class="font-bold">{plan.audience}</h3>
+                <p class="text-xs font-semibold text-patina">{plan.pace}</p>
+              </div>
+            </div>
+            <ul class="mt-4 space-y-2.5 text-sm leading-relaxed text-ink-soft">
+              {plan.points.map((point) => (
+                <li class="flex gap-2">
+                  <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brass" aria-hidden="true"></span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <div class="mt-5 pt-1">
+              <a
+                href={plan.route.href}
+                class="inline-flex min-h-12 items-center rounded-full border border-brick px-6 py-3 font-semibold text-brick transition hover:bg-brick/5"
+              >
+                {plan.route.label}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 訪客服務與周邊設施 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="facilities-title">
+    <p class="text-sm font-semibold text-patina">當地設施</p>
+    <h2 id="facilities-title" class="mt-1 text-2xl font-bold md:text-3xl">訪客服務與周邊設施</h2>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+      以類型概述呈現老街周邊的實用設施，不推薦特定商家；實際位置與營業狀態可在
+      Google 地圖依類型搜尋確認。
+    </p>
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {facilityGroups.map((facility) => (
+        <div class="rounded-3xl border border-line bg-white/60 p-6">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h3 class="font-bold">{facility.title}</h3>
+            <p class="text-xs font-semibold tracking-wide text-patina">{facility.note}</p>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{facility.description}</p>
+          <a
+            href={mapsSearch(facility.query)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-3 inline-block text-sm font-semibold text-brick hover:underline"
+          >
+            在 Google 地圖搜尋{facility.title} ↗
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 通用遊覽路線 -->
+  <section class="bg-paper-deep/60 py-14" aria-labelledby="routes-title">
+    <div class="mx-auto max-w-6xl px-4 md:px-6">
+      <p class="text-sm font-semibold text-patina">路線</p>
+      <h2 id="routes-title" class="mt-1 text-2xl font-bold md:text-3xl">推薦通用遊覽路線</h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        沒有特殊偏好時，照時間預算選一條走就對了。
+      </p>
+
+      <div class="mt-8 grid gap-4 md:grid-cols-3">
+        {generalRoutes.map((route) => (
+          <a
+            href={route.href}
+            class="group rounded-3xl border border-line bg-white/70 p-6 transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <p class="text-xs font-semibold tracking-wide text-patina">{route.time}</p>
+            <h3 class="mt-1 font-bold group-hover:text-brick">{route.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-soft">{route.summary}</p>
+            <p class="mt-3 text-sm font-semibold text-patina">看路線細節 →</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 科普與訪客責任 -->
+  <section class="mx-auto max-w-6xl px-4 py-14 md:px-6" aria-labelledby="responsibility-title">
+    <p class="text-sm font-semibold text-patina">永續旅遊</p>
+    <h2 id="responsibility-title" class="mt-1 text-2xl font-bold md:text-3xl">科普與訪客責任</h2>
+    <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+      老街能被下一代看到，靠的是每一位訪客的自律。這六件事，是我們對造訪者的誠懇提醒。
+    </p>
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {responsibilities.map((item) => (
+        <div class="rounded-3xl border border-line bg-white/60 p-6">
+          <h3 class="font-bold">{item.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-soft">{item.text}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-10 rounded-3xl bg-paper-deep p-6 md:p-8">
+      <h3 class="text-xl font-bold">出發前的最後確認</h3>
+      <p class="mt-2 text-sm leading-relaxed text-ink-soft">
+        即時車位、店家營業狀態與最新路況，請以 Google 地圖為準。
+      </p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <a
+          href={googleMaps.place}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex min-h-12 items-center justify-center rounded-full bg-brick px-6 py-3 font-semibold text-white transition hover:bg-brick-dark"
+        >
+          開啟 Google 地圖
+        </a>
+        <a
+          href="/transport/parking/"
+          class="inline-flex min-h-12 items-center rounded-full border border-brick px-6 py-3 font-semibold text-brick transition hover:bg-brick/5"
+        >
+          停車指南
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mx-auto max-w-3xl px-4 pb-16 md:px-6" aria-label="實用資訊常見問題">
+    <h2 class="text-2xl font-bold md:text-3xl">實用資訊常見問題</h2>
+    <div class="mt-6 divide-y divide-line rounded-3xl border border-line bg-white/50">
+      {visitorFaq.map((item) => (
+        <details class="group px-6 py-4">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
+            {item.q}
+            <span class="text-brass transition group-open:rotate-45" aria-hidden="true">＋</span>
+          </summary>
+          <p class="mt-3 leading-relaxed text-ink-soft">{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -6,6 +6,12 @@ const COORDINATES = '23.0352429,120.3082454';
 const UTM_SOURCE = `utm_source=${encodeURIComponent(site.domain)}`;
 
 export const googleMaps = {
+  /** Google Maps 分享短連結（來自地圖「分享」功能）。 */
+  share: site.mapsShareUrl,
+
+  /** Google 地圖上的當地評價列表頁。 */
+  reviews: `https://search.google.com/local/reviews?placeid=${PLACE_ID}`,
+
   place: [
     'https://www.google.com/maps/search/?api=1',
     `query=${encodeURIComponent(`${PLACE_NAME}, 臺南市新化區`)}`,

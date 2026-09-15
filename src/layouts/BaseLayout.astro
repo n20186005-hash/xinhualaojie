@@ -55,6 +55,14 @@ const ogImageUrl = new URL(og.src, site.url).href;
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#8a4137" />
 
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content={site.name} />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content="zh_TW" />
@@ -64,6 +72,7 @@ const ogImageUrl = new URL(og.src, site.url).href;
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} ${site.englishName} - 臺南市新化區`} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -79,6 +88,17 @@ const ogImageUrl = new URL(og.src, site.url).href;
       }
       gtag('js', new Date());
       gtag('config', 'G-HXM22WWPKP');
+    </script>
+
+    <!-- PWA Service Worker -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            /* 註冊失敗時靜默降級，不影響一般瀏覽 */
+          });
+        });
+      }
     </script>
 
     {schemas.map((schema) => (

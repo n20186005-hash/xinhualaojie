@@ -5,6 +5,7 @@ export interface NavItem {
 
 export const mainNav: NavItem[] = [
   { label: '第一次來', href: '/guide/' },
+  { label: '實用資訊', href: '/guide/visitor-info/' },
   { label: '美食', href: '/food/' },
   { label: '交通停車', href: '/transport/' },
   { label: '散步路線', href: '/routes/' },
@@ -17,6 +18,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
     title: '規劃行程',
     items: [
       { label: '第一次去新化老街', href: '/guide/first-visit/' },
+      { label: '實用資訊與天氣', href: '/guide/visitor-info/' },
       { label: '兩小時散步路線', href: '/routes/two-hours/' },
       { label: '新化半日遊', href: '/routes/half-day/' },
       { label: '新化一日遊', href: '/routes/one-day/' },
