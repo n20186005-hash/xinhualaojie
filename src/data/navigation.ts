@@ -57,7 +57,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
 
 export const sectionMeta: Record<
   string,
-  { label: string; title: string; description: string }
+  { label: string; title: string; description: string; intro?: string }
 > = {
   guide: {
     label: '第一次來',
@@ -67,9 +67,11 @@ export const sectionMeta: Record<
   },
   food: {
     label: '美食',
-    title: '新化老街美食總整理',
+    title: '新化老街美食推薦｜必吃早餐、小吃與伴手禮',
     description:
-      '新化老街早餐、傳統市場小吃、老字號糕餅與在地正餐分類整理，附 Google 地圖連結，方便邊走邊查。',
+      '新化老街美食推薦一次看：早上吃的傳統早餐與市場小吃、老字號糕餅伴手禮、在地正餐，附 Google 地圖搜尋連結，方便邊走邊查。',
+    intro:
+      '來新化老街吃什麼，取決於你什麼時候抵達：早上直奔傳統市場與早餐店，下午逛餅舖買伴手禮，晚上找一間在地正餐坐下來吃。下面依需求分成四類，點進去就能看詳細推薦與 Google 地圖搜尋。',
   },
   transport: {
     label: '交通停車',

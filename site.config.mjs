@@ -1,4 +1,4 @@
-const DEFAULT_SITE_DOMAIN = 'XinhuaLaojie.com';
+const DEFAULT_SITE_DOMAIN = 'xinhualaojie.com';
 
 /**
  * Resolve the public site identity at build time.
