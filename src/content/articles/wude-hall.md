@@ -6,7 +6,14 @@ heroImage: "wude-hall"
 heroAlt: "新化武德殿日式建築外觀"
 order: 2
 stayLabel: "約 20 分鐘"
-mapsQuery: "新化武德殿"
+mapsQuery: "新化武德殿 臺南市新化區和平街53號"
+management:
+  heading: "關於新化武德殿"
+  body: "新化武德殿是臺南市保存的日治時期武道場歷史建築。文化資產保存及修復由市府文化體系推動，營運管理委託新化區公所辦理，文化志工亦長期參與導覽與維護。建築見證1920年代新化的武道教育及城鎮公共設施演變，如今是認識地方歷史與木構造工藝的重要文化場域。"
+  sourceUrl: "https://tmach-culture.tainan.gov.tw/page.asp?mainid=09152DCC-6FB7-48DE-8730-61D94E43AF00"
+gallery:
+  - image: "wude-hall-2"
+    alt: "新化武德殿另一角度的建築實景與屋頂細節"
 related:
   - "damujiang-cultural-park"
   - "xinhua-street-office"
