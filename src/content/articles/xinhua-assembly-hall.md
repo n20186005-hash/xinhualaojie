@@ -2,6 +2,8 @@
 title: "新化公會堂｜青少年圖書館"
 description: "1937 年落成的原新化郡公會堂，如今活化為青少年圖書館。整理中山路地址、開放時間、木構造與老街步行路線。"
 section: "nearby"
+heroImage: "xinhua-assembly-hall"
+heroAlt: "原新化郡公會堂建築正面與入口實景"
 order: 7
 stayLabel: "約 30–60 分鐘"
 address: "712 臺南市新化區中山路 134 號"

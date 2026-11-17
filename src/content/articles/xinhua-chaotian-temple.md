@@ -2,6 +2,11 @@
 title: "新化朝天宮"
 description: "新化朝天宮位於中正路 534 號，是大目降十八嬈民俗的重要信仰節點；整理廟宇歷史、參拜禮儀與老街順遊路線。"
 section: "nearby"
+heroImage: "xinhua-chaotian-exterior"
+heroAlt: "新化朝天宮廟宇正面、屋脊與廟埕實景"
+gallery:
+  - image: "xinhua-chaotian-temple"
+    alt: "新化朝天宮匾額與門楣裝飾細節"
 order: 9
 stayLabel: "約 20–40 分鐘"
 address: "712 臺南市新化區太平里中正路 534 號"

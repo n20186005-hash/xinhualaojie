@@ -2,6 +2,8 @@
 title: "新化北極殿（上帝廟）"
 description: "新化民生路43號的北極殿／上帝廟，認識玄天上帝信仰、大目降十八嬈廟宇網絡與老街周邊參拜路線。"
 section: "nearby"
+heroImage: "xinhua-beiji-temple"
+heroAlt: "新化北極殿上帝廟正面建築實景"
 order: 14
 stayLabel: "約 15–30 分鐘"
 address: "712 臺南市新化區民生路 43 號"

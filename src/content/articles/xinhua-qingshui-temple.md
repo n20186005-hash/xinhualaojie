@@ -2,6 +2,8 @@
 title: "新化清水寺"
 description: "新化清水寺位於中山路414號，與大目降十八嬈七廟信仰圈相關，並有清代重建碑記史料可循。"
 section: "nearby"
+heroImage: "xinhua-qingshui-temple"
+heroAlt: "新化清水寺正面殿宇與屋頂裝飾實景"
 order: 13
 stayLabel: "約 15–30 分鐘"
 address: "712 臺南市新化區中山路 414 號"

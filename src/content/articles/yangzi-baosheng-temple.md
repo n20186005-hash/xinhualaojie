@@ -2,6 +2,8 @@
 title: "洋仔保生大帝廟"
 description: "位於新化豐榮里洋子127號的保生大帝廟，探索地方醫神信仰、兩殿式廟宇、月眉池與豐榮鬥蟋蟀文化。"
 section: "nearby"
+heroImage: "yangzi-baosheng-temple"
+heroAlt: "洋仔保生大帝廟正面入口及廟宇裝飾實景"
 order: 15
 stayLabel: "約 20–40 分鐘"
 address: "712 臺南市新化區豐榮里洋子 127 號"

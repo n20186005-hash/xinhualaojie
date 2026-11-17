@@ -2,6 +2,8 @@
 title: "新化鍾家古厝"
 description: "走訪新化中山路巷內的市定古蹟鍾家古厝，認識傳統民宅、日治歷史記憶與外觀參觀禮儀。"
 section: "nearby"
+heroImage: "zhong-family-house"
+heroAlt: "新化鍾家古厝內部傳統木構造與紅色門框實景"
 order: 8
 stayLabel: "約 15–30 分鐘"
 address: "712 臺南市新化區中山路 258 巷 3 號"

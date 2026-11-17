@@ -2,6 +2,8 @@
 title: "新化果菜市場"
 description: "新化果菜市場以波浪形綠化屋頂與青果集散文化聞名。整理護東路地址、購果動線、交通及新化一日遊安排。"
 section: "nearby"
+heroImage: "xinhua-produce-market"
+heroAlt: "新化果菜市場室內開放式交易空間實景"
 order: 11
 stayLabel: "約 30–60 分鐘"
 address: "712 臺南市新化區護東路 335 號"

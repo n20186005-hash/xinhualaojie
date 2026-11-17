@@ -2,6 +2,8 @@
 title: "瓜瓜園地瓜生態故事館"
 description: "新化地瓜生態故事館以甘藷產業、品種與農業教育為主題，整理中正路地址、開放時段、導覽預約、交通與親子遊覽建議。"
 section: "nearby"
+heroImage: "sweet-potato-museum"
+heroAlt: "瓜瓜園地瓜生態故事館外部園區與地瓜主題彩繪實景"
 order: 12
 stayLabel: "約 45–90 分鐘"
 address: "712 臺南市新化區中正路 65 號（以業者官網地址為準）"

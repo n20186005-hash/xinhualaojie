@@ -2,6 +2,8 @@
 title: "新化奉安殿"
 description: "新化國小旁的奉安殿保留日治教育史痕跡，整理位置、歷史背景、外觀觀察與尊重校園的參訪方式。"
 section: "nearby"
+heroImage: "xinhua-feng-an-hall"
+heroAlt: "新化奉安殿與周邊校園樹木的實景"
 order: 10
 stayLabel: "約 10–20 分鐘"
 address: "712 臺南市新化區中山路 173 號（新化國小北側，依入口公告）"

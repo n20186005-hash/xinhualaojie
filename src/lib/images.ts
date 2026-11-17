@@ -25,6 +25,16 @@ import yangKuiMemorial from '../assets/yang-kui-memorial.jpg';
 import hutoupiLake from '../assets/hutoupi-lake.jpg';
 import hutoupiPavilion from '../assets/hutoupi-pavilion.jpg';
 import xinhuaForest from '../assets/xinhua-forest.jpg';
+import xinhuaAssemblyHall from '../assets/xinhua-assembly-hall.jpg';
+import zhongFamilyHouse from '../assets/zhong-family-house.jpg';
+import xinhuaChaotianTemple from '../assets/xinhua-chaotian-temple.jpg';
+import xinhuaChaotianExterior from '../assets/xinhua-chaotian-exterior.jpg';
+import xinhuaFengAnHall from '../assets/xinhua-feng-an-hall.jpg';
+import xinhuaProduceMarket from '../assets/xinhua-produce-market.jpg';
+import sweetPotatoMuseum from '../assets/sweet-potato-museum.jpg';
+import xinhuaQingshuiTemple from '../assets/xinhua-qingshui-temple.jpg';
+import xinhuaBeijiTemple from '../assets/xinhua-beiji-temple.jpg';
+import yangziBaoshengTemple from '../assets/yangzi-baosheng-temple.jpg';
 
 export const imageMap: Record<string, ImageMetadata> = {
   'hero-street': heroStreet,
@@ -52,6 +62,16 @@ export const imageMap: Record<string, ImageMetadata> = {
   'hutoupi-lake': hutoupiLake,
   'hutoupi-pavilion': hutoupiPavilion,
   'xinhua-forest': xinhuaForest,
+  'xinhua-assembly-hall': xinhuaAssemblyHall,
+  'zhong-family-house': zhongFamilyHouse,
+  'xinhua-chaotian-temple': xinhuaChaotianTemple,
+  'xinhua-chaotian-exterior': xinhuaChaotianExterior,
+  'xinhua-feng-an-hall': xinhuaFengAnHall,
+  'xinhua-produce-market': xinhuaProduceMarket,
+  'sweet-potato-museum': sweetPotatoMuseum,
+  'xinhua-qingshui-temple': xinhuaQingshuiTemple,
+  'xinhua-beiji-temple': xinhuaBeijiTemple,
+  'yangzi-baosheng-temple': yangziBaoshengTemple,
 };
 
 export function getImageByKey(key: string): ImageMetadata {
