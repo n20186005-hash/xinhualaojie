@@ -21,6 +21,8 @@ const articles = defineCollection({
     ]),
     heroImage: z.string().optional(),
     heroAlt: z.string().optional(),
+    gallery: z.array(z.object({ image: z.string(), alt: z.string() })).default([]),
+    management: z.object({ heading: z.string(), body: z.string(), sourceUrl: z.string().url() }).optional(),
     featured: z.boolean().default(false),
     order: z.number().default(100),
     stayLabel: z.string().optional(),
