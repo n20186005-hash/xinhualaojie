@@ -6,7 +6,11 @@ heroImage: "yang-kui-memorial"
 heroAlt: "楊逵文學紀念館建築外觀"
 order: 3
 stayLabel: "約 30 分鐘"
-mapsQuery: "楊逵文學紀念館"
+mapsQuery: "楊逵文學紀念館 臺南市新化區中正路488號"
+management:
+  heading: "關於楊逵文學紀念館"
+  body: "楊逵文學紀念館是臺南市新化區的地方文學展示空間，由臺南市新化區公所公告館舍休館及維護資訊。館內以新化出身的作家楊逵及其文學、社會經歷為核心，讓旅人從地方生活走進臺灣近代文學史。館舍展覽與開放安排可能因施工或活動調整，參觀前請查詢區公所最新公告。"
+  sourceUrl: "https://web.tainan.gov.tw/sinhua/News_Content.aspx?n=5932&s=8808179"
 related:
   - "xinhua-street-office"
   - "damujiang-cultural-park"
