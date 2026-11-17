@@ -32,8 +32,8 @@ export const site = {
    */
   googleRating: {
     value: 4.1,
-    count: 9794,
-    syncedAt: '2026 年 9 月',
+    count: 9838,
+    syncedAt: '2026 年 11 月',
   },
 
   /**

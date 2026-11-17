@@ -10,7 +10,7 @@ export const googleMaps = {
   share: site.mapsShareUrl,
 
   /** Google 地圖上的當地評價列表頁。 */
-  reviews: `https://search.google.com/local/reviews?placeid=${PLACE_ID}`,
+  reviews: 'https://maps.app.goo.gl/URRNpF3wvhTnJs6t5',
 
   place: [
     'https://www.google.com/maps/search/?api=1',
