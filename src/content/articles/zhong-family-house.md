@@ -9,7 +9,8 @@ stayLabel: "約 15–30 分鐘"
 address: "712 臺南市新化區中山路 258 巷 3 號"
 hoursSummary: "非固定開放的古蹟空間；內部參觀依管理者公告"
 admissionSummary: "外觀遠觀無須購票；入內規則請現場核實"
-mapsQuery: "新化鍾家古厝 臺南市新化區中山路258巷3號"
+mapsQuery: "臺南市新化區中山路258巷3號"
+mapsUrl: "https://www.google.com/maps/search/?api=1&query=%E8%87%BA%E5%8D%97%E5%B8%82%E6%96%B0%E5%8C%96%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF258%E5%B7%B73%E8%99%9F"
 management:
   heading: "關於新化鍾家古厝"
   body: "新化鍾家古厝為臺南市指定古蹟，具有傳統民宅建築與地方歷史記憶。文化資產保存由臺南市政府依相關制度監督；古厝不等於全天開放的公共展館，遊客應尊重管理者與周邊居民的生活空間。"
@@ -35,7 +36,7 @@ faq:
 | 開放 | 依古蹟管理者現場公告；不得擅闖 |
 | 費用 | 公共道路觀賞無門票；導覽或入內費用依公告 |
 | 建議停留 | 約 15–30 分鐘 |
-| 地圖 | [鍾家古厝專屬定位](https://www.google.com/maps/search/?api=1&query=新化鍾家古厝+臺南市新化區中山路258巷3號) |
+| 地圖 | [以中山路 258 巷 3 號開啟 Google Maps](https://www.google.com/maps/search/?api=1&query=%E8%87%BA%E5%8D%97%E5%B8%82%E6%96%B0%E5%8C%96%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF258%E5%B7%B73%E8%99%9F) |
 
 ## 歷史、建築與文化
 
