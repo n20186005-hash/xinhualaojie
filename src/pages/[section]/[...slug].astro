@@ -84,7 +84,7 @@ if (entry.data.stops && entry.data.stops.length > 0) {
   );
 }
 
-const mapsHref = entry.data.mapsQuery ? mapsSearch(entry.data.mapsQuery) : googleMaps.place;
+const mapsHref = entry.data.mapsUrl ?? (entry.data.mapsQuery ? mapsSearch(entry.data.mapsQuery) : googleMaps.place);
 const directionsHref = entry.data.mapsQuery
   ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(entry.data.mapsQuery)}`
   : googleMaps.directions;

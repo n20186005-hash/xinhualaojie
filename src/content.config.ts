@@ -30,6 +30,7 @@ const articles = defineCollection({
     hoursSummary: z.string().optional(),
     admissionSummary: z.string().optional(),
     mapsQuery: z.string().optional(),
+    mapsUrl: z.string().url().optional(),
     showMapActions: z.boolean().default(true),
     related: z.array(z.string()).default([]),
     faq: z

@@ -27,6 +27,7 @@ import hutoupiPavilion from '../assets/hutoupi-pavilion.jpg';
 import xinhuaForest from '../assets/xinhua-forest.jpg';
 import xinhuaAssemblyHall from '../assets/xinhua-assembly-hall.jpg';
 import zhongFamilyHouse from '../assets/zhong-family-house.jpg';
+import suFamilyHouse from '../assets/su-family-house.jpg';
 import xinhuaChaotianTemple from '../assets/xinhua-chaotian-temple.jpg';
 import xinhuaChaotianExterior from '../assets/xinhua-chaotian-exterior.jpg';
 import xinhuaFengAnHall from '../assets/xinhua-feng-an-hall.jpg';
@@ -64,6 +65,7 @@ export const imageMap: Record<string, ImageMetadata> = {
   'xinhua-forest': xinhuaForest,
   'xinhua-assembly-hall': xinhuaAssemblyHall,
   'zhong-family-house': zhongFamilyHouse,
+  'su-family-house': suFamilyHouse,
   'xinhua-chaotian-temple': xinhuaChaotianTemple,
   'xinhua-chaotian-exterior': xinhuaChaotianExterior,
   'xinhua-feng-an-hall': xinhuaFengAnHall,

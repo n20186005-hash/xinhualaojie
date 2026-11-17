@@ -14,7 +14,7 @@ management:
   heading: "關於新化鍾家古厝"
   body: "新化鍾家古厝為臺南市指定古蹟，具有傳統民宅建築與地方歷史記憶。文化資產保存由臺南市政府依相關制度監督；古厝不等於全天開放的公共展館，遊客應尊重管理者與周邊居民的生活空間。"
   sourceUrl: "https://tcmb.culture.tw/zh-tw/detail?id=20130425000001&indexCode=BOCH_CountryCulture_11"
-related: ["xinhua-assembly-hall", "xinhua-street-office", "wude-hall"]
+related: ["su-family-house", "xinhua-assembly-hall", "xinhua-street-office", "wude-hall"]
 faq:
   - q: "能進入鍾家古厝嗎？"
     a: "這是具有管理與保存需求的古蹟，請先核對當期開放或導覽資訊；沒有開放時只在公共道路上觀賞。"
@@ -23,6 +23,8 @@ faq:
 ---
 
 比起中正路上熱鬧的街屋立面，**鍾家古厝**更能讓人看見新化傳統住宅的另一個面向。它位在中山路巷內，請把這一站當作尊重居民與文化資產的慢速觀察。
+
+**名稱辨識：** 這裡是「新化鍾家古厝」（中山路 258 巷 3 號），不是中正路 341 巷的[新化蘇家古厝](/nearby/su-family-house/)。兩處各有自己的歷史與地圖位置，請勿混用導航。
 
 ## 基本資訊
 
