@@ -114,6 +114,14 @@ const directionsHref = entry.data.mapsQuery
           建議停留：{entry.data.stayLabel}
         </p>
       )}
+      {entry.data.section === 'nearby' && (
+        <dl class="mt-5 grid gap-3 rounded-2xl border border-line bg-paper-deep/60 p-4 text-sm sm:grid-cols-2">
+          {entry.data.address && <div><dt class="font-semibold text-patina">所在地</dt><dd class="mt-1">{entry.data.address}</dd></div>}
+          {entry.data.hoursSummary && <div><dt class="font-semibold text-patina">開放資訊</dt><dd class="mt-1">{entry.data.hoursSummary}</dd></div>}
+          {entry.data.admissionSummary && <div><dt class="font-semibold text-patina">門票</dt><dd class="mt-1">{entry.data.admissionSummary}</dd></div>}
+          <div><dt class="font-semibold text-patina">地圖與導航</dt><dd class="mt-1"><a class="font-semibold text-brick hover:underline" href={mapsHref} target="_blank" rel="noopener noreferrer">查看此景點位置 ↗</a></dd></div>
+        </dl>
+      )}
     </header>
 
     {heroImage && (
