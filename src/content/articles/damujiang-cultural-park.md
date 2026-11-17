@@ -7,7 +7,14 @@ heroAlt: "大目降文化園區的日式木造宿舍建築"
 featured: true
 order: 1
 stayLabel: "約 45 分鐘"
-mapsQuery: "大目降文化園區"
+mapsQuery: "大目降文化園區 臺南市新化區和平街"
+management:
+  heading: "關於大目降文化園區"
+  body: "大目降文化園區以新化武德殿、日式警察宿舍群及周邊文化空間串聯成歷史街廓。臺南市政府文化局曾整修日式宿舍群並採委外經營模式活化，個別棟別由不同營運者提供展覽、飲食或文化體驗，因此各空間的開放日期與規則並不完全相同。園區讓旅人從木造宿舍、庭院與武德殿理解新化由行政聚落到當代文化旅遊的變化。"
+  sourceUrl: "https://historic.tainan.gov.tw/index.php?id=1051&index=5&lang=cht&option=module&task=pageinfo"
+gallery:
+  - image: "wude-hall-2"
+    alt: "大目降文化園區周邊的新化武德殿建築實景"
 related:
   - "wude-hall"
   - "yang-kui-memorial"
