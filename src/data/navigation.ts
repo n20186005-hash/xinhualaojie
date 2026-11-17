@@ -18,6 +18,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
     title: '規劃行程',
     items: [
       { label: '第一次去新化老街', href: '/guide/first-visit/' },
+      { label: '新化老街營業時間', href: '/guide/opening-hours/' },
       { label: '實用資訊與天氣', href: '/guide/visitor-info/' },
       { label: '兩小時散步路線', href: '/routes/two-hours/' },
       { label: '新化半日遊', href: '/routes/half-day/' },
@@ -41,6 +42,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
       { label: '三角湧的故事', href: '/history/sanjiaoyong/' },
       { label: '大目降的由來', href: '/history/damujiang/' },
       { label: '周邊景點總覽', href: '/nearby/' },
+      { label: '新化伴手禮推薦', href: '/food/souvenirs/' },
     ],
   },
   {
