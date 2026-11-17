@@ -18,6 +18,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
     title: '規劃行程',
     items: [
       { label: '第一次去新化老街', href: '/guide/first-visit/' },
+      { label: '新化老街營業時間', href: '/guide/opening-hours/' },
       { label: '實用資訊與天氣', href: '/guide/visitor-info/' },
       { label: '兩小時散步路線', href: '/routes/two-hours/' },
       { label: '新化半日遊', href: '/routes/half-day/' },
@@ -41,6 +42,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
       { label: '三角湧的故事', href: '/history/sanjiaoyong/' },
       { label: '大目降的由來', href: '/history/damujiang/' },
       { label: '周邊景點總覽', href: '/nearby/' },
+      { label: '新化伴手禮推薦', href: '/food/souvenirs/' },
     ],
   },
   {
@@ -99,8 +101,9 @@ export const sectionMeta: Record<
   },
   nearby: {
     label: '周邊景點',
-    title: '新化老街周邊景點',
+    title: '新化老街周邊景點｜武德殿、楊逵紀念館與大目降文化園區',
     description:
-      '新化街役場、楊逵文學紀念館、武德殿、大目降文化園區步行可達；虎頭埤與新化林場適合延伸成一日遊。',
+      '新化老街附近去哪裡？整理步行可達的新化街役場、楊逵文學紀念館、武德殿、大目降文化園區，以及虎頭埤、新化林場延伸路線，附各景點地圖。',
+    intro: '先走中正路老街，再依序順遊街役場、楊逵文學紀念館、大目降文化園區與武德殿；各景點的內頁提供專屬地圖、建築看點、地址及交通。若要安排虎頭埤或新化林場，請另外預留車程。',
   },
 };

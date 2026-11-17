@@ -8,9 +8,9 @@ export const site = {
   name: '新化老街',
   englishName: 'Xinhua Old Street',
   tagline: '大目降散步、美食與建築旅行指南',
-  defaultTitle: '新化老街攻略｜美食、停車場、營業時間與一日遊路線',
+  defaultTitle: '新化老街攻略2026｜營業時間、停車場、早餐美食、伴手禮與地圖',
   defaultDescription:
-    '新化老街（Xinhua Old Street）位於臺南市新化區，整理老街美食、停車、交通、巴洛克街屋、大目降文化園區與半日遊路線，附 Google 地圖導航，適合第一次造訪新化的旅客。',
+    '台南新化老街怎麼逛？整理營業時間、停車場、新化早餐、必買伴手禮與中正路巴洛克街屋；附 Google 地圖、交通方式、兩小時散步及半日遊路線。',
   placeId: 'ChIJHWTFiXpwbjQRSnel5LNZHGM',
   latitude: 23.0352429,
   longitude: 120.3082454,

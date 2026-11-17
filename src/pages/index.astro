@@ -84,7 +84,7 @@ const foodEntries = [
   {
     title: '老字號糕餅與伴手禮',
     text: '傳承數十年的餅舖與特產，適合帶回家。',
-    href: '/food/traditional-snacks/',
+    href: '/food/souvenirs/',
   },
   {
     title: '在地正餐',
@@ -162,8 +162,8 @@ const homeFaq = [
     a: '適合。整條路線平坦、距離不長，沿途有騎樓遮蔭與休息點；建議放慢步調，把重點放在市場、街屋與文化園區，全程約兩小時內可完成。',
   },
   {
-    q: '店家營業資訊去哪裡看？',
-    a: '本站整理的是穩定的路線與看點；個別店家的營業時間、公休與菜單變動較快，出發前請直接在 Google 地圖查看店家頁面的最新資訊。',
+    q: '新化老街營業時間和店家公休去哪裡看？',
+    a: '新化老街是公共街道，沒有統一開關門時間；早餐攤、商店與展館各有營業及公休日。可先看本站營業時間指南，再向個別店家核實。',
   },
 ];
 
@@ -514,6 +514,22 @@ const schemas = [websiteSchema(), touristAttractionSchema(), faqSchema(homeFaq)]
         </a>
       ))}
     </div>
+    <div class="mt-6 rounded-2xl border border-line bg-white/60 p-5">
+      <h3 class="font-bold text-ink">更多新化歷史與生活景點</h3>
+      <p class="mt-2 text-sm text-ink-soft">延伸探索公共建築、古厝、信仰與農產市場；各頁附地址、參訪提醒及專屬地圖。</p>
+      <div class="mt-3 flex flex-wrap gap-2 text-sm">
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-assembly-hall/">新化公會堂</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/zhong-family-house/">鍾家古厝</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-chaotian-temple/">新化朝天宮</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-feng-an-hall/">新化奉安殿</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-produce-market/">新化果菜市場</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/sweet-potato-museum/">地瓜生態故事館</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-qingshui-temple/">新化清水寺</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/xinhua-beiji-temple/">新化北極殿</a>
+        <a class="rounded-full border border-line px-3 py-2 font-semibold text-brick hover:bg-paper-deep" href="/nearby/yangzi-baosheng-temple/">洋仔保生大帝廟</a>
+      </div>
+    </div>
+    <a href="/nearby/" class="mt-6 inline-flex min-h-11 items-center rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-brick transition hover:bg-paper-deep">查看全部周邊景點、地址與路線 →</a>
   </section>
 
   <!-- FAQ -->
